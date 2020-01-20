@@ -260,8 +260,9 @@ func (c *CDCClient) partialRegionFeed(
 					return errors.Annotate(err, "receive empty or unknow error msg")
 				}
 			default:
-				switch status.Code(err) {
+				switch status.Code(errors.Cause(err)) {
 				case codes.Unavailable, codes.Internal, codes.Unknown:
+					regionInfo.meta = nil
 					return errors.Trace(err)
 				default:
 					return backoff.Permanent(err)
@@ -299,6 +300,9 @@ func (c *CDCClient) divideAndSendEventFeedToRegions(
 			regions, peers, err = c.pd.ScanRegions(ctx, nextSpan.Start, nextSpan.End, limit)
 			scanRegionsDuration.WithLabelValues(captureID).Observe(time.Since(scanT0).Seconds())
 			if err != nil {
+				if errors.Cause(err) == context.Canceled {
+					return backoff.Permanent(err)
+				}
 				return errors.Trace(err)
 			}
 			if !util.CheckRegionsCover(regions, nextSpan) {
