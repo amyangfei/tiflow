@@ -43,9 +43,10 @@ const (
 )
 
 type singleRegionInfo struct {
-	meta *metapb.Region
-	span util.Span
-	ts   uint64
+	meta   *metapb.Region
+	leader *metapb.Peer
+	span   util.Span
+	ts     uint64
 }
 
 // CDCClient to get events from TiKV
@@ -135,15 +136,12 @@ func (c *CDCClient) getConn(
 	return
 }
 
-func (c *CDCClient) getConnByMeta(
-	ctx context.Context, meta *metapb.Region,
+func (c *CDCClient) getConnByLeader(
+	ctx context.Context, peer *metapb.Peer,
 ) (conn *grpc.ClientConn, err error) {
-	if len(meta.Peers) == 0 {
+	if peer == nil {
 		return nil, errors.New("no peer")
 	}
-
-	// the first is leader in Peers?
-	peer := meta.Peers[0]
 
 	store, err := c.getStore(ctx, peer.GetStoreId())
 	if err != nil {
@@ -222,7 +220,7 @@ func (c *CDCClient) partialRegionFeed(
 		var err error
 
 		if regionInfo.meta == nil {
-			regionInfo.meta, _, err = c.pd.GetRegion(ctx, regionInfo.span.Start)
+			regionInfo.meta, regionInfo.leader, err = c.pd.GetRegion(ctx, regionInfo.span.Start)
 		}
 
 		if err != nil {
@@ -230,7 +228,7 @@ func (c *CDCClient) partialRegionFeed(
 			return errors.Trace(err)
 		}
 
-		maxTs, err := c.singleEventFeed(ctx, regionInfo.span, regionInfo.ts, regionInfo.meta, eventCh)
+		maxTs, err := c.singleEventFeed(ctx, regionInfo.span, regionInfo.ts, regionInfo.meta, regionInfo.leader, eventCh)
 		log.Debug("singleEventFeed quit")
 
 		if maxTs > ts {
@@ -262,13 +260,12 @@ func (c *CDCClient) partialRegionFeed(
 					return errors.Annotate(err, "receive empty or unknow error msg")
 				}
 			default:
-				if status.Code(err) == codes.Unavailable {
-					regionInfo.meta = nil
+				switch status.Code(err) {
+				case codes.Unavailable, codes.Internal, codes.Unknown:
 					return errors.Trace(err)
+				default:
+					return backoff.Permanent(err)
 				}
-
-				return backoff.Permanent(err)
-
 			}
 		}
 
@@ -294,11 +291,12 @@ func (c *CDCClient) divideAndSendEventFeedToRegions(
 	for {
 		var (
 			regions []*metapb.Region
+			peers   []*metapb.Peer
 			err     error
 		)
 		retryErr := retry.Run(func() error {
 			scanT0 := time.Now()
-			regions, _, err = c.pd.ScanRegions(ctx, nextSpan.Start, nextSpan.End, limit)
+			regions, peers, err = c.pd.ScanRegions(ctx, nextSpan.Start, nextSpan.End, limit)
 			scanRegionsDuration.WithLabelValues(captureID).Observe(time.Since(scanT0).Seconds())
 			if err != nil {
 				return errors.Trace(err)
@@ -316,7 +314,7 @@ func (c *CDCClient) divideAndSendEventFeedToRegions(
 			return retryErr
 		}
 
-		for _, region := range regions {
+		for idx, region := range regions {
 			partialSpan, err := util.Intersect(nextSpan, util.Span{Start: region.StartKey, End: region.EndKey})
 			if err != nil {
 				return errors.Trace(err)
@@ -327,9 +325,10 @@ func (c *CDCClient) divideAndSendEventFeedToRegions(
 
 			select {
 			case regionCh <- singleRegionInfo{
-				meta: region,
-				span: partialSpan,
-				ts:   ts,
+				meta:   region,
+				leader: peers[idx],
+				span:   partialSpan,
+				ts:     ts,
 			}:
 			case <-ctx.Done():
 				return ctx.Err()
@@ -354,6 +353,7 @@ func (c *CDCClient) singleEventFeed(
 	span util.Span,
 	ts uint64,
 	meta *metapb.Region,
+	leader *metapb.Peer,
 	eventCh chan<- *model.RegionFeedEvent,
 ) (checkpointTs uint64, err error) {
 	req := &cdcpb.ChangeDataRequest{
@@ -369,7 +369,7 @@ func (c *CDCClient) singleEventFeed(
 
 	var initialized uint32
 
-	conn, err := c.getConnByMeta(ctx, meta)
+	conn, err := c.getConnByLeader(ctx, leader)
 	if err != nil {
 		return req.CheckpointTs, err
 	}
