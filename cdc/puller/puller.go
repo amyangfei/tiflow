@@ -96,7 +96,7 @@ func (p *pullerImpl) Run(ctx context.Context) error {
 	g, ctx := errgroup.WithContext(ctx)
 
 	checkpointTs := p.checkpointTs
-	eventCh := make(chan *model.RegionFeedEvent, 128)
+	eventCh := make(chan *model.RegionFeedEvent, 1024)
 
 	for _, span := range p.spans {
 		span := span

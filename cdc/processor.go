@@ -50,9 +50,9 @@ import (
 )
 
 const (
-	updateInfoInterval        = time.Millisecond * 500
-	resolveTsInterval         = time.Millisecond * 500
-	waitGlobalResolvedTsDelay = time.Millisecond * 500
+	updateInfoInterval        = time.Millisecond * 50
+	resolveTsInterval         = time.Millisecond * 50
+	waitGlobalResolvedTsDelay = time.Millisecond * 50
 	flushDMLsInterval         = time.Millisecond * 10
 )
 
@@ -785,7 +785,7 @@ func (p *processor) addTable(ctx context.Context, tableID int64, startTs uint64)
 		inputTxn: make(chan model.RawTxn, 1),
 	}
 
-	tc := newTxnChannel(table.inputTxn, 64, func(resolvedTs uint64) {
+	tc := newTxnChannel(table.inputTxn, 1024, func(resolvedTs uint64) {
 		table.storeResolvedTS(resolvedTs)
 	})
 	table.inputChan = tc

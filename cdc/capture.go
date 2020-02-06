@@ -40,7 +40,7 @@ import (
 )
 
 const (
-	ownerRunInterval    = time.Millisecond * 500
+	ownerRunInterval    = time.Millisecond * 50
 	cfWatcherRetryDelay = time.Millisecond * 500
 )
 
