@@ -50,10 +50,10 @@ import (
 )
 
 const (
-	updateInfoInterval        = time.Millisecond * 50
-	resolveTsInterval         = time.Millisecond * 50
-	waitGlobalResolvedTsDelay = time.Millisecond * 50
-	flushDMLsInterval         = time.Millisecond * 10
+	updateInfoInterval        = time.Millisecond * 100
+	resolveTsInterval         = time.Millisecond * 100
+	waitGlobalResolvedTsDelay = time.Millisecond * 100
+	flushDMLsInterval         = time.Millisecond * 100
 )
 
 var (
