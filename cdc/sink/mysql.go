@@ -47,6 +47,8 @@ type mysqlSink struct {
 
 var _ Sink = &mysqlSink{}
 
+var dmlCount int
+
 func configureSinkURI(sinkURI string) (string, error) {
 	dsnCfg, err := dmysql.ParseDSN(sinkURI)
 	if err != nil {
@@ -187,45 +189,49 @@ func (s *mysqlSink) execDDL(ctx context.Context, ddl *model.DDL) error {
 
 func (s *mysqlSink) execDMLs(ctx context.Context, dmls []*model.DML) error {
 	startTime := time.Now()
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return errors.Trace(err)
-	}
+	// tx, err := s.db.BeginTx(ctx, nil)
+	// if err != nil {
+	// 	return errors.Trace(err)
+	// }
 
-	for _, dml := range dmls {
-		var fPrepare func(*model.DML) (string, []interface{}, error)
-		switch dml.Tp {
-		case model.InsertDMLType, model.UpdateDMLType:
-			fPrepare = s.prepareReplace
-		case model.DeleteDMLType:
-			fPrepare = s.prepareDelete
-		default:
-			return fmt.Errorf("invalid dml type: %v", dml.Tp)
-		}
-		query, args, err := fPrepare(dml)
-		if err != nil {
-			if rbErr := tx.Rollback(); rbErr != nil {
-				log.Error("Failed to rollback", zap.Error(err))
-			}
-			return errors.Trace(err)
-		}
-		log.Debug("exec dml", zap.String("sql", query), zap.Any("args", args))
-		if _, err := tx.ExecContext(ctx, query, args...); err != nil {
-			if rbErr := tx.Rollback(); rbErr != nil {
-				log.Error("Failed to rollback", zap.String("sql", query), zap.Error(err))
-			}
-			return errors.Trace(err)
-		}
-	}
+	// for _, dml := range dmls {
+	// 	var fPrepare func(*model.DML) (string, []interface{}, error)
+	// 	switch dml.Tp {
+	// 	case model.InsertDMLType, model.UpdateDMLType:
+	// 		fPrepare = s.prepareReplace
+	// 	case model.DeleteDMLType:
+	// 		fPrepare = s.prepareDelete
+	// 	default:
+	// 		return fmt.Errorf("invalid dml type: %v", dml.Tp)
+	// 	}
+	// 	query, args, err := fPrepare(dml)
+	// 	if err != nil {
+	// 		if rbErr := tx.Rollback(); rbErr != nil {
+	// 			log.Error("Failed to rollback", zap.Error(err))
+	// 		}
+	// 		return errors.Trace(err)
+	// 	}
+	// 	log.Debug("exec dml", zap.String("sql", query), zap.Any("args", args))
+	// 	if _, err := tx.ExecContext(ctx, query, args...); err != nil {
+	// 		if rbErr := tx.Rollback(); rbErr != nil {
+	// 			log.Error("Failed to rollback", zap.String("sql", query), zap.Error(err))
+	// 		}
+	// 		return errors.Trace(err)
+	// 	}
+	// }
 
-	if err = tx.Commit(); err != nil {
-		return errors.Trace(err)
-	}
+	// if err = tx.Commit(); err != nil {
+	// 	return errors.Trace(err)
+	// }
 	captureID := util.CaptureIDFromCtx(ctx)
 	changefeedID := util.ChangefeedIDFromCtx(ctx)
 	execTxnHistogram.WithLabelValues(captureID, changefeedID).Observe(time.Since(startTime).Seconds())
 	execBatchHistogram.WithLabelValues(captureID, changefeedID).Observe(float64(len(dmls)))
-	log.Info("Exec DML succeeded", zap.Int("num of DMLs", len(dmls)))
+	dmlCount += len(dmls)
+	if dmlCount >= 1000 {
+		log.Info("Exec accumulated DML succeeded", zap.Int("num of DMLs", dmlCount))
+		dmlCount = 0
+	}
 	return nil
 }
 

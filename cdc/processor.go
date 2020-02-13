@@ -50,13 +50,13 @@ import (
 )
 
 const (
-	updateInfoInterval        = time.Millisecond * 500
-	resolveTsInterval         = time.Millisecond * 500
-	waitGlobalResolvedTsDelay = time.Millisecond * 500
+	updateInfoInterval        = time.Millisecond * 50
+	resolveTsInterval         = time.Millisecond * 50
+	waitGlobalResolvedTsDelay = time.Millisecond * 50
 	flushDMLsInterval         = time.Millisecond * 10
 
-	defaultInputTxnChanSize  = 1
-	defaultOutputTxnChanSize = 64
+	defaultInputTxnChanSize  = 64
+	defaultOutputTxnChanSize = 1024
 )
 
 var (
