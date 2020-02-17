@@ -36,7 +36,9 @@ import (
 	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
 	gbackoff "google.golang.org/grpc/backoff"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/keepalive"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -260,7 +262,10 @@ func (c *CDCClient) partialRegionFeed(
 			}
 		default:
 			if errors.Cause(err) == context.Canceled {
-				break
+				return nil
+			}
+			if status.Code(err) == codes.Canceled {
+				return nil
 			}
 			if rpcCtx.Meta != nil {
 				c.regionCache.OnSendFail(bo, rpcCtx, needReloadRegion(failStoreIDs, rpcCtx), err)
