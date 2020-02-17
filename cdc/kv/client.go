@@ -34,6 +34,7 @@ import (
 	"github.com/pingcap/tidb/store/tikv"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
+	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
 	gbackoff "google.golang.org/grpc/backoff"
 	"google.golang.org/grpc/keepalive"
@@ -195,8 +196,13 @@ func (c *CDCClient) partialRegionFeed(
 ) error {
 	ts := regionInfo.ts
 	failStoreIDs := make(map[uint64]struct{})
-	berr := retry.Run(func() error {
+	rl := rate.NewLimiter(0.1, 10)
+	for {
 		var err error
+
+		if !rl.Allow() {
+			return errors.New("partialRegionFeed exceeds rate limit")
+		}
 
 		bo := tikv.NewBackoffer(ctx, tikvRequestMaxBackoff)
 		rpcCtx, err := c.regionCache.GetTiKVRPCContext(bo, regionInfo.verID, tidbkv.ReplicaReadLeader, 0)
@@ -220,48 +226,47 @@ func (c *CDCClient) partialRegionFeed(
 			}
 		}
 
-		if err != nil {
-			log.Info("EventFeed disconnected",
-				zap.Reflect("span", regionInfo.span),
-				zap.Uint64("checkpoint", ts),
-				zap.Error(err))
+		if err == nil {
+			break
+		}
 
-			switch eerr := errors.Cause(err).(type) {
-			case *eventError:
-				if notLeader := eerr.GetNotLeader(); notLeader != nil {
-					eventFeedErrorCounter.WithLabelValues("NotLeader").Inc()
-					c.regionCache.UpdateLeader(regionInfo.verID, notLeader.GetLeader().GetStoreId(), rpcCtx.PeerIdx)
+		log.Info("EventFeed disconnected",
+			zap.Reflect("span", regionInfo.span),
+			zap.Uint64("checkpoint", ts),
+			zap.Error(err))
+
+		switch eerr := errors.Cause(err).(type) {
+		case *eventError:
+			if notLeader := eerr.GetNotLeader(); notLeader != nil {
+				eventFeedErrorCounter.WithLabelValues("NotLeader").Inc()
+				c.regionCache.UpdateLeader(regionInfo.verID, notLeader.GetLeader().GetStoreId(), rpcCtx.PeerIdx)
+			} else if eerr.GetEpochNotMatch() != nil {
+				eventFeedErrorCounter.WithLabelValues("EpochNotMatch").Inc()
+				return c.divideAndSendEventFeedToRegions(ctx, regionInfo.span, ts, regionCh)
+			} else if eerr.GetRegionNotFound() != nil {
+				eventFeedErrorCounter.WithLabelValues("RegionNotFound").Inc()
+				keyLocation, err := c.regionCache.LocateKey(tikv.NewBackoffer(ctx, tikvRequestMaxBackoff), regionInfo.span.Start)
+				if err != nil {
 					return errors.Trace(err)
-				} else if eerr.GetEpochNotMatch() != nil {
-					eventFeedErrorCounter.WithLabelValues("EpochNotMatch").Inc()
-					return c.divideAndSendEventFeedToRegions(ctx, regionInfo.span, ts, regionCh)
-				} else if eerr.GetRegionNotFound() != nil {
-					eventFeedErrorCounter.WithLabelValues("RegionNotFound").Inc()
-					keyLocation, err := c.regionCache.LocateKey(tikv.NewBackoffer(ctx, tikvRequestMaxBackoff), regionInfo.span.Start)
-					if err != nil {
-						return errors.Trace(err)
-					}
-					regionInfo.verID = keyLocation.Region
-					return errors.Trace(err)
-				} else {
-					eventFeedErrorCounter.WithLabelValues("Unknown").Inc()
-					log.Warn("receive empty or unknown error msg", zap.Stringer("error", eerr))
-					return errors.Annotate(err, "receive empty or unknow error msg")
 				}
-			default:
-				if errors.Cause(err) != context.Canceled && rpcCtx.Meta != nil {
-					c.regionCache.OnSendFail(bo, rpcCtx, needReloadRegion(failStoreIDs, rpcCtx), err)
-				}
-				return errors.Trace(err)
+				regionInfo.verID = keyLocation.Region
+			} else {
+				eventFeedErrorCounter.WithLabelValues("Unknown").Inc()
+				log.Warn("receive empty or unknown error msg", zap.Stringer("error", eerr))
+				return errors.Annotate(err, "receive empty or unknow error msg")
+			}
+		default:
+			if errors.Cause(err) == context.Canceled {
+				break
+			}
+			if rpcCtx.Meta != nil {
+				c.regionCache.OnSendFail(bo, rpcCtx, needReloadRegion(failStoreIDs, rpcCtx), err)
 			}
 		}
-		return nil
-	}, maxRetry)
-
-	if errors.Cause(berr) == context.Canceled {
-		return nil
+		time.Sleep(time.Millisecond.Milliseconds * 100)
 	}
-	return errors.Trace(berr)
+
+	return nil
 }
 
 // divideAndSendEventFeedToRegions split up the input span
