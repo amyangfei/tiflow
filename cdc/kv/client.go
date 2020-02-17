@@ -23,7 +23,6 @@ import (
 	"github.com/cenkalti/backoff"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/kvproto/pkg/cdcpb"
-	"github.com/pingcap/kvproto/pkg/errorpb"
 	"github.com/pingcap/kvproto/pkg/metapb"
 	"github.com/pingcap/log"
 	pd "github.com/pingcap/pd/client"
@@ -214,7 +213,11 @@ func (c *CDCClient) partialRegionFeed(
 			case <-ctx.Done():
 				return ctx.Err()
 			default:
-				err = &eventError{Event_Error: &cdcpb.Event_Error{EpochNotMatch: &errorpb.EpochNotMatch{}}}
+				keyLocation, err := c.regionCache.LocateKey(tikv.NewBackoffer(ctx, tikvRequestMaxBackoff), regionInfo.span.Start)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				regionInfo.verID = keyLocation.Region
 			}
 		} else {
 			var maxTs uint64
@@ -263,7 +266,7 @@ func (c *CDCClient) partialRegionFeed(
 				c.regionCache.OnSendFail(bo, rpcCtx, needReloadRegion(failStoreIDs, rpcCtx), err)
 			}
 		}
-		time.Sleep(time.Millisecond.Milliseconds * 100)
+		time.Sleep(time.Millisecond * 100)
 	}
 
 	return nil
