@@ -48,6 +48,40 @@ const (
 	grpcInitialConnWindowSize = 1 << 30
 )
 
+type activeWindow struct {
+	sync.RWMutex
+	regionID    uint64
+	lastActive  time.Time
+	lastResolve time.Time
+}
+
+func (aw *activeWindow) SetActive() {
+	aw.Lock()
+	aw.lastActive = time.Now()
+	aw.Unlock()
+}
+
+func (aw *activeWindow) SetResolve() {
+	aw.Lock()
+	aw.lastResolve = time.Now()
+	aw.Unlock()
+}
+
+func (aw *activeWindow) Check() {
+	aw.RLock()
+	defer aw.RUnlock()
+	now := time.Now()
+	active := now.Unix() - aw.lastActive.Unix()
+	resolve := now.Unix() - aw.lastResolve.Unix()
+	if active > 30 || resolve > 30 {
+		log.Warn("region not active",
+			zap.Uint64("region", aw.regionID),
+			zap.Int64("active duration", active),
+			zap.Int64("resolve duration", resolve),
+		)
+	}
+}
+
 type singleRegionInfo struct {
 	verID tikv.RegionVerID
 	span  util.Span
@@ -371,6 +405,22 @@ func (c *CDCClient) singleEventFeed(
 		EndKey:       span.End,
 	}
 
+	aw := &activeWindow{regionID: rpcCtx.Meta.GetId()}
+	cctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	go func() {
+		timer := time.NewTicker(time.Second * 30)
+		defer timer.Stop()
+		for {
+			select {
+			case <-cctx.Done():
+				return
+			case <-timer.C:
+				aw.Check()
+			}
+		}
+	}()
+
 	var initialized uint32
 
 	conn, err := c.getConn(ctx, rpcCtx.Addr)
@@ -426,6 +476,7 @@ func (c *CDCClient) singleEventFeed(
 
 		// log.Debug("recv ChangeDataEvent", zap.Stringer("event", cevent))
 
+		aw.SetActive()
 		for _, event := range cevent.Events {
 			eventSize.WithLabelValues(captureID).Observe(float64(event.Event.Size()))
 			switch x := event.Event.(type) {
@@ -518,6 +569,7 @@ func (c *CDCClient) singleEventFeed(
 			case *cdcpb.Event_Error_:
 				return atomic.LoadUint64(&req.CheckpointTs), errors.Trace(&eventError{Event_Error: x.Error})
 			case *cdcpb.Event_ResolvedTs:
+				aw.SetResolve()
 				if atomic.LoadUint32(&initialized) == 0 {
 					continue
 				}
