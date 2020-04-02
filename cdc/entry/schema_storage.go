@@ -131,6 +131,26 @@ func WrapTableInfo(info *timodel.TableInfo) *TableInfo {
 		}
 	}
 
+	handleColID := int64(-1)
+	reqCols := make([]rowcodec.ColInfo, len(ti.Columns))
+	for i, col := range ti.Columns {
+		isPK := (ti.PKIsHandle && mysql.HasPriKeyFlag(col.Flag)) || col.ID == timodel.ExtraHandleID
+		if isPK {
+			handleColID = col.ID
+		}
+		reqCols[i] = rowcodec.ColInfo{
+			ID:         col.ID,
+			Tp:         int32(col.Tp),
+			Flag:       int32(col.Flag),
+			Flen:       col.Flen,
+			Decimal:    col.Decimal,
+			Elems:      col.Elems,
+			IsPKHandle: isPK,
+		}
+	}
+	ti.rowColInfos = reqCols
+	ti.handleColID = handleColID
+
 	return ti
 }
 
@@ -154,28 +174,6 @@ func (ti *TableInfo) GetIndexInfo(indexID int64) (info *timodel.IndexInfo, exist
 
 // GetRowColInfos returns all column infos for rowcodec
 func (ti *TableInfo) GetRowColInfos() (int64, []rowcodec.ColInfo) {
-	if len(ti.rowColInfos) != 0 {
-		return ti.handleColID, ti.rowColInfos
-	}
-	handleColID := int64(-1)
-	reqCols := make([]rowcodec.ColInfo, len(ti.Columns))
-	for i, col := range ti.Columns {
-		isPK := (ti.PKIsHandle && mysql.HasPriKeyFlag(col.Flag)) || col.ID == timodel.ExtraHandleID
-		if isPK {
-			handleColID = col.ID
-		}
-		reqCols[i] = rowcodec.ColInfo{
-			ID:         col.ID,
-			Tp:         int32(col.Tp),
-			Flag:       int32(col.Flag),
-			Flen:       col.Flen,
-			Decimal:    col.Decimal,
-			Elems:      col.Elems,
-			IsPKHandle: isPK,
-		}
-	}
-	ti.rowColInfos = reqCols
-	ti.handleColID = handleColID
 	return ti.handleColID, ti.rowColInfos
 }
 
@@ -470,9 +468,23 @@ func (s *Storage) HandlePreviousDDLJobIfNeed(commitTs uint64) error {
 }
 
 func (s *Storage) handlePreviousDDLJobIfNeed(commitTs uint64) error {
+	jobs, err := s.ddlShouldBeHandle(commitTs)
+	if err != nil {
+		return errors.Trace(err)
+	}
+	for _, job := range jobs {
+		_, _, _, err := s.HandleDDL(job)
+		if err != nil {
+			return errors.Trace(err)
+		}
+	}
+	return nil
+}
+
+func (s *Storage) ddlShouldBeHandle(commitTs uint64) (ddls []*timodel.Job, err error) {
 	resolvedTs := atomic.LoadUint64(s.resolvedTs)
 	if commitTs > resolvedTs {
-		return errors.Annotatef(model.ErrUnresolved, "waiting resolved ts of ddl puller, resolvedTs(%d), commitTs(%d)", resolvedTs, commitTs)
+		return nil, errors.Annotatef(model.ErrUnresolved, "waiting resolved ts of ddl puller, resolvedTs(%d), commitTs(%d)", resolvedTs, commitTs)
 	}
 	currentJob, jobs := s.jobList.FetchNextJobs(s.currentJob, commitTs)
 	for _, job := range jobs {
@@ -484,13 +496,30 @@ func (s *Storage) handlePreviousDDLJobIfNeed(commitTs uint64) error {
 			log.Debug("skip DDL job because the job is already handled", zap.Stringer("job", job))
 			continue
 		}
-		_, _, _, err := s.HandleDDL(job)
-		if err != nil {
-			return errors.Annotatef(err, "handle ddl job %v failed, the schema info: %s", job, s)
-		}
+		ddls = append(ddls, job)
 	}
 	s.currentJob = currentJob
-	return nil
+	return
+}
+
+// DDLShouldBeHandle returns jobs that should be handled
+func (s *Storage) DDLShouldBeHandle(commitTs uint64) ([]*timodel.Job, error) {
+	var jobs []*timodel.Job
+	err := retry.Run(10*time.Millisecond, 25,
+		func() error {
+			var err error
+			jobs, err = s.ddlShouldBeHandle(commitTs)
+			if errors.Cause(err) != model.ErrUnresolved {
+				return backoff.Permanent(err)
+			}
+			return err
+		})
+	switch err.(type) {
+	case *backoff.PermanentError:
+		return nil, errors.Annotate(err, "timeout")
+	default:
+		return jobs, err
+	}
 }
 
 // HandleDDL has four return values,
@@ -501,6 +530,10 @@ func (s *Storage) handlePreviousDDLJobIfNeed(commitTs uint64) error {
 func (s *Storage) HandleDDL(job *timodel.Job) (schemaName string, tableName string, sql string, err error) {
 	log.Debug("handle job: ", zap.String("sql query", job.Query), zap.Stringer("job", job))
 
+	if job.BinlogInfo.FinishedTS <= s.lastHandledTs {
+		log.Debug("skip DDL job because the job is already handled", zap.Stringer("job", job))
+		return "", "", "", nil
+	}
 	if SkipJob(job) {
 		return "", "", "", nil
 	}

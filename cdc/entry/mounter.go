@@ -19,8 +19,11 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
+	"math"
 	"strconv"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
@@ -104,55 +107,157 @@ type mounterImpl struct {
 	schemaStorage   *Storage
 	rawRowChangedCh <-chan *model.RawKVEntry
 	output          chan *model.RowChangedEvent
+	mergeRowChs     []chan *model.RowChangedEvent
 }
 
 // NewMounter creates a mounter
 func NewMounter(rawRowChangedCh <-chan *model.RawKVEntry, schemaStorage *Storage) Mounter {
-	return &mounterImpl{
+	mounter := &mounterImpl{
 		schemaStorage:   schemaStorage,
 		rawRowChangedCh: rawRowChangedCh,
 		output:          make(chan *model.RowChangedEvent, defaultOutputChanSize),
+		mergeRowChs:     make([]chan *model.RowChangedEvent, workerNum),
 	}
+	for i := 0; i < workerNum; i++ {
+		mounter.mergeRowChs[i] = make(chan *model.RowChangedEvent, defaultOutputChanSize)
+	}
+	return mounter
 }
 
+const workerNum = 4
+
 func (m *mounterImpl) Run(ctx context.Context) error {
-	go func() {
-		m.collectMetrics(ctx)
-	}()
 
 	captureID := util.CaptureIDFromCtx(ctx)
 	changefeedID := util.ChangefeedIDFromCtx(ctx)
 	tableIDStr := strconv.FormatInt(util.TableIDFromCtx(ctx), 10)
 	metricMounterResolvedTs := mounterTableResolvedTsGauge.WithLabelValues(captureID, changefeedID, tableIDStr)
+
+	errg, cctx := errgroup.WithContext(ctx)
+	errg.Go(func() error {
+		m.collectMetrics(cctx)
+		return nil
+	})
+
+	unmarshalRowCh := make(chan *model.RawKVEntry, 128000)
+	unmarshalWorkerGroup := m.unmarshalWorker(ctx, unmarshalRowCh, m.mergeRowChs)
+
+	errg.Go(func() error {
+		for {
+			var rawRow *model.RawKVEntry
+			select {
+			case <-cctx.Done():
+				return errors.Trace(cctx.Err())
+			case rawRow = <-m.rawRowChangedCh:
+			}
+			if rawRow == nil {
+				continue
+			}
+			jobs, err := m.schemaStorage.DDLShouldBeHandle(rawRow.Ts)
+			if err != nil {
+				return errors.Trace(err)
+			}
+			if len(jobs) > 0 {
+				close(unmarshalRowCh)
+				err := unmarshalWorkerGroup.Wait()
+				if err != nil {
+					return errors.Trace(err)
+				}
+				for _, job := range jobs {
+					log.Info("handle job", zap.String("job", job.Query))
+					_, _, _, err := m.schemaStorage.HandleDDL(job)
+					if err != nil {
+						return errors.Trace(err)
+					}
+				}
+				unmarshalRowCh = make(chan *model.RawKVEntry, 128000)
+				unmarshalWorkerGroup = m.unmarshalWorker(ctx, unmarshalRowCh, m.mergeRowChs)
+			}
+			if rawRow.OpType == model.OpTypeResolved {
+				metricMounterResolvedTs.Set(float64(oracle.ExtractPhysical(rawRow.Ts)))
+			}
+			unmarshalRowCh <- rawRow
+		}
+	})
+
+	errg.Go(func() error {
+		return m.mergeWorker(cctx, m.mergeRowChs)
+	})
+	return errg.Wait()
+}
+
+func (m *mounterImpl) unmarshalWorker(ctx context.Context, input chan *model.RawKVEntry, output []chan *model.RowChangedEvent) *errgroup.Group {
+	errg, cctx := errgroup.WithContext(ctx)
+
+	for i := 0; i < workerNum; i++ {
+		i := i
+		errg.Go(func() error {
+			var rawRow *model.RawKVEntry
+			var ok bool
+			for {
+				select {
+				case <-cctx.Done():
+					return cctx.Err()
+				case rawRow, ok = <-input:
+				}
+				if !ok {
+					return nil
+				}
+				if rawRow.OpType == model.OpTypeResolved {
+					for j := 0; j < workerNum; j++ {
+						output[j] <- &model.RowChangedEvent{Ts: rawRow.Ts, Resolved: true}
+					}
+					continue
+				}
+				event, err := m.unmarshalAndMountRowChanged(rawRow)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				if event == nil {
+					continue
+				}
+				log.Info("unmarshal output", zap.Reflect("event", event))
+				output[i] <- event
+			}
+		})
+	}
+	return errg
+}
+
+func (m *mounterImpl) mergeWorker(ctx context.Context, input []chan *model.RowChangedEvent) error {
+	defer func() {
+		for i := 0; i < workerNum; i++ {
+			close(input[i])
+		}
+	}()
+	events := make([]*model.RowChangedEvent, workerNum)
+	var lastResolvedTs uint64
 	for {
-		var rawRow *model.RawKVEntry
-		select {
-		case <-ctx.Done():
-			return errors.Trace(ctx.Err())
-		case rawRow = <-m.rawRowChangedCh:
+		minTs := uint64(math.MaxUint64)
+		var minChIndex int
+		for i := 0; i < workerNum; i++ {
+			if events[i] == nil {
+				select {
+				case events[i] = <-input[i]:
+				case <-ctx.Done():
+					return errors.Trace(ctx.Err())
+				}
+			}
+			if minTs > events[i].Ts {
+				minTs = events[i].Ts
+				minChIndex = i
+			}
 		}
-		if rawRow == nil {
-			continue
+		if events[minChIndex].Resolved {
+			if events[minChIndex].Ts != lastResolvedTs {
+				m.output <- events[minChIndex]
+				lastResolvedTs = events[minChIndex].Ts
+			}
+		} else {
+			log.Info("merge output", zap.Reflect("event", events[minChIndex]))
+			m.output <- events[minChIndex]
 		}
-
-		if err := m.schemaStorage.HandlePreviousDDLJobIfNeed(rawRow.Ts); err != nil {
-			return errors.Trace(err)
-		}
-
-		if rawRow.OpType == model.OpTypeResolved {
-			m.output <- &model.RowChangedEvent{Resolved: true, Ts: rawRow.Ts}
-			metricMounterResolvedTs.Set(float64(oracle.ExtractPhysical(rawRow.Ts)))
-			continue
-		}
-
-		event, err := m.unmarshalAndMountRowChanged(rawRow)
-		if err != nil {
-			return errors.Trace(err)
-		}
-		if event == nil {
-			continue
-		}
-		m.output <- event
+		events[minChIndex] = nil
 	}
 }
 
