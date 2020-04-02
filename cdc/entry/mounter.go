@@ -164,7 +164,7 @@ func (m *mounterImpl) Run(ctx context.Context) error {
 					return errors.Trace(err)
 				}
 				for _, job := range jobs {
-					log.Info("handle job", zap.String("job", job.Query))
+					log.Debug("handle job", zap.String("job", job.Query))
 					_, _, _, err := m.schemaStorage.HandleDDL(job)
 					if err != nil {
 						return errors.Trace(err)
@@ -216,7 +216,7 @@ func (m *mounterImpl) unmarshalWorker(ctx context.Context, input chan *model.Raw
 				if event == nil {
 					continue
 				}
-				log.Info("unmarshal output", zap.Reflect("event", event))
+				log.Debug("unmarshal output", zap.Reflect("event", event))
 				output[i] <- event
 			}
 		})
@@ -254,7 +254,7 @@ func (m *mounterImpl) mergeWorker(ctx context.Context, input []chan *model.RowCh
 				lastResolvedTs = events[minChIndex].Ts
 			}
 		} else {
-			log.Info("merge output", zap.Reflect("event", events[minChIndex]))
+			log.Debug("merge output", zap.Reflect("event", events[minChIndex]))
 			m.output <- events[minChIndex]
 		}
 		events[minChIndex] = nil
