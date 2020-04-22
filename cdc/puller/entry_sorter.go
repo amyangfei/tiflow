@@ -158,7 +158,11 @@ func (es *EntrySorter) AddEntry(entry *model.PolymorphicEvent) {
 	if entry.RawKV.OpType == model.OpTypeResolved {
 		es.resolvedTsGroup = append(es.resolvedTsGroup, entry.Ts)
 	} else {
-		es.unsorted = append(es.unsorted, entry)
+		if entry.RawKV.Key != nil || entry.RawKV.Value != nil {
+			es.unsorted = append(es.unsorted, entry)
+		} else {
+			log.Warn("ignore nil kv", zap.Reflect("entry", entry))
+		}
 	}
 	es.lock.Unlock()
 	if entry.RawKV.OpType == model.OpTypeResolved {
