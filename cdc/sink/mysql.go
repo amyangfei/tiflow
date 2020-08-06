@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"net/url"
 	"runtime"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -58,6 +59,9 @@ const (
 	defaultDDLMaxRetryTime = 20
 	defaultTiDBTxnMode     = "optimistic"
 	defaultFlushInterval   = time.Millisecond * 50
+	// TODO: fetch config from changefeed parameters
+	batchReplaceEnabled = true
+	batchReplaceSize    = 20
 )
 
 type mysqlSink struct {
@@ -666,30 +670,39 @@ type preparedDMLs struct {
 }
 
 // prepareDMLs converts model.RowChangedEvent list to query string list and args list
-func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64, bucket int) (*preparedDMLs, error) {
+func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64, bucket int, batchReplace bool) *preparedDMLs {
 	sqls := make([]string, 0, len(rows))
 	values := make([][]interface{}, 0, len(rows))
+	replaces := make(map[string][][]interface{})
 	for _, row := range rows {
 		var query string
 		var args []interface{}
-		var err error
+		quoteTable := quotes.QuoteSchema(row.Table.Schema, row.Table.Table)
 		// TODO(leoppro): using `UPDATE` instead of `REPLACE` if the old value is enabled
 		if len(row.PreColumns) != 0 {
-			query, args, err = prepareDelete(row.Table.Schema, row.Table.Table, row.PreColumns)
-			if err != nil {
-				return nil, errors.Trace(err)
-			}
+			query, args = prepareDelete(quoteTable, row.PreColumns)
 			sqls = append(sqls, query)
 			values = append(values, args)
 		}
 		if len(row.Columns) != 0 {
-			query, args, err = prepareReplace(row.Table.Schema, row.Table.Table, row.Columns)
-			if err != nil {
-				return nil, errors.Trace(err)
+			if batchReplace {
+				query, args = mapReplace(quoteTable, row.Columns)
+				if vals, ok := replaces[query]; ok {
+					vals = append(vals, args)
+				} else {
+					replaces[query] = [][]interface{}{args}
+				}
+			} else {
+				query, args = prepareReplace(quoteTable, row.Columns)
+				sqls = append(sqls, query)
+				values = append(values, args)
 			}
-			sqls = append(sqls, query)
-			values = append(values, args)
 		}
+	}
+	if batchReplace {
+		replaceSqls, replaceValues := reduceReplace(replaces)
+		sqls = append(sqls, replaceSqls...)
+		values = append(values, replaceValues...)
 	}
 	dmls := &preparedDMLs{
 		sqls:   sqls,
@@ -702,17 +715,14 @@ func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64,
 			row.Table.Schema, row.Table.Table, uint64(bucket), replicaID, row.StartTs)
 		dmls.markSQL = updateMark
 	}
-	return dmls, nil
+	return dmls
 }
 
 func (s *mysqlSink) execDMLs(ctx context.Context, rows []*model.RowChangedEvent, replicaID uint64, bucket int) error {
 	failpoint.Inject("MySQLSinkExecDMLError", func() {
 		failpoint.Return(errors.Trace(dmysql.ErrInvalidConn))
 	})
-	dmls, err := s.prepareDMLs(rows, replicaID, bucket)
-	if err != nil {
-		return errors.Trace(err)
-	}
+	dmls := s.prepareDMLs(rows, replicaID, bucket, batchReplaceEnabled)
 	log.Debug("prepare DMLs", zap.Any("rows", rows), zap.Strings("sqls", dmls.sqls), zap.Any("values", dmls.values))
 	if err := s.execDMLWithMaxRetries(ctx, dmls, defaultDMLMaxRetryTime, bucket); err != nil {
 		ts := make([]uint64, 0, len(rows))
@@ -727,7 +737,7 @@ func (s *mysqlSink) execDMLs(ctx context.Context, rows []*model.RowChangedEvent,
 	return nil
 }
 
-func prepareReplace(schema, table string, cols map[string]*model.Column) (string, []interface{}, error) {
+func prepareReplace(quoteTable string, cols map[string]*model.Column) (string, []interface{}) {
 	var builder strings.Builder
 	columnNames := make([]string, 0, len(cols))
 	args := make([]interface{}, 0, len(cols))
@@ -740,16 +750,70 @@ func prepareReplace(schema, table string, cols map[string]*model.Column) (string
 	}
 
 	colList := "(" + buildColumnList(columnNames) + ")"
-	tblName := quotes.QuoteSchema(schema, table)
-	builder.WriteString("REPLACE INTO " + tblName + colList + " VALUES ")
+	builder.WriteString("REPLACE INTO " + quoteTable + colList + " VALUES ")
 	builder.WriteString("(" + model.HolderString(len(columnNames)) + ");")
 
-	return builder.String(), args, nil
+	return builder.String(), args
 }
 
-func prepareDelete(schema, table string, cols map[string]*model.Column) (string, []interface{}, error) {
+func mapReplace(quoteTable string, cols map[string]*model.Column) (string, []interface{}) {
 	var builder strings.Builder
-	builder.WriteString("DELETE FROM " + quotes.QuoteSchema(schema, table) + " WHERE")
+	columnNames := make([]string, 0, len(cols))
+	args := make([]interface{}, 0, len(cols))
+	for k, v := range cols {
+		if v.Flag.IsGeneratedColumn() {
+			continue
+		}
+		columnNames = append(columnNames, k)
+	}
+	sort.Strings(columnNames)
+	for _, colName := range columnNames {
+		args = append(args, cols[colName])
+	}
+
+	colList := "(" + buildColumnList(columnNames) + ")"
+	builder.WriteString("REPLACE INTO " + quoteTable + colList + " VALUES ")
+
+	return builder.String(), args
+}
+
+func reduceReplace(replaces map[string][][]interface{}) ([]string, [][]interface{}) {
+	next := func(query string, valueNum int, last bool) string {
+		query += "(" + model.HolderString(valueNum) + ")"
+		if !last {
+			query += ","
+		}
+		return query
+	}
+	sqls := make([]string, 0)
+	args := make([][]interface{}, 0)
+	for replace, vals := range replaces {
+		query := replace
+		cacheArgs := make([]interface{}, 0)
+		last := false
+		count := 0
+		for i, val := range vals {
+			count += 1
+			if i == len(vals)-1 || count >= batchReplaceSize {
+				count = 0
+				last = true
+			}
+			query = next(query, len(val), last)
+			cacheArgs = append(cacheArgs, val...)
+			if last {
+				sqls = append(sqls, query)
+				args = append(args, cacheArgs)
+				query = replace
+				cacheArgs = cacheArgs[:]
+			}
+		}
+	}
+	return sqls, args
+}
+
+func prepareDelete(quoteTable string, cols map[string]*model.Column) (string, []interface{}) {
+	var builder strings.Builder
+	builder.WriteString("DELETE FROM " + quoteTable + " WHERE")
 
 	colNames, wargs := whereSlice(cols)
 	args := make([]interface{}, 0, len(wargs))
@@ -766,7 +830,7 @@ func prepareDelete(schema, table string, cols map[string]*model.Column) (string,
 	}
 	builder.WriteString(" LIMIT 1;")
 	sql := builder.String()
-	return sql, args, nil
+	return sql, args
 }
 
 func whereSlice(cols map[string]*model.Column) (colNames []string, args []interface{}) {
