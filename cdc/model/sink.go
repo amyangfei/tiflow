@@ -208,6 +208,8 @@ type RowChangedEvent struct {
 	Columns      map[string]*Column `json:"columns"`
 	PreColumns   map[string]*Column `json:"pre-columns"`
 	Keys         []string           `json:"keys"`
+	// ColumnNames is only available when Columns is not nil
+	ColumnNames []string `json:"-"`
 }
 
 // Column represents a column value in row changed event

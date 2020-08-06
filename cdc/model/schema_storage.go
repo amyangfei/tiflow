@@ -37,6 +37,7 @@ type TableInfo struct {
 	columnsOffset    map[int64]int
 	indicesOffset    map[int64]int
 	uniqueColumns    map[int64]struct{}
+	ColumnNames      []string
 
 	// only for new row format decoder
 	handleColID int64
@@ -66,6 +67,7 @@ func WrapTableInfo(schemaID int64, schemaName string, version uint64, info *mode
 		handleColID:      -1,
 		HandleIndexID:    HandleIndexTableIneligible,
 		rowColInfos:      make([]rowcodec.ColInfo, len(info.Columns)),
+		ColumnNames:      make([]string, len(info.Columns)),
 	}
 
 	uniqueIndexNum := 0
@@ -84,6 +86,7 @@ func WrapTableInfo(schemaID int64, schemaName string, version uint64, info *mode
 			IsPKHandle: isPK,
 			Ft:         rowcodec.FieldTypeFromModelColumn(col),
 		}
+		ti.ColumnNames[i] = col.Name.O
 	}
 
 	for i, idx := range ti.Indices {

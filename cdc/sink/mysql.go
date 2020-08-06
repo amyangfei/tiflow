@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"net/url"
 	"runtime"
-	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -717,7 +716,7 @@ func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64,
 		}
 		if len(row.Columns) != 0 {
 			if s.params.batchReplaceEnabled {
-				query, args = mapReplace(quoteTable, row.Columns)
+				query, args = mapReplace(quoteTable, row.ColumnNames, row.Columns)
 				if _, ok := replaces[query]; !ok {
 					replaces[query] = make([][]interface{}, 0)
 				}
@@ -789,22 +788,26 @@ func prepareReplace(quoteTable string, cols map[string]*model.Column) (string, [
 	return builder.String(), args
 }
 
-func mapReplace(quoteTable string, cols map[string]*model.Column) (string, []interface{}) {
+func mapReplace(quoteTable string, names []string, cols map[string]*model.Column) (string, []interface{}) {
+	if len(names) != len(cols) {
+		log.Fatal("column names and columns mismatch",
+			zap.Strings("names", names), zap.Reflect("cols", cols))
+	}
 	var builder strings.Builder
-	columnNames := make([]string, 0, len(cols))
 	args := make([]interface{}, 0, len(cols))
-	for k, v := range cols {
-		if v.Flag.IsGeneratedColumn() {
+	for _, name := range names {
+		col, ok := cols[name]
+		if !ok {
+			log.Fatal("column name not found",
+				zap.Strings("names", names), zap.Reflect("cols", cols))
+		}
+		if col.Flag.IsGeneratedColumn() {
 			continue
 		}
-		columnNames = append(columnNames, k)
-	}
-	sort.Strings(columnNames)
-	for _, colName := range columnNames {
-		args = append(args, cols[colName].Value)
+		args = append(args, col.Value)
 	}
 
-	colList := "(" + buildColumnList(columnNames) + ")"
+	colList := "(" + buildColumnList(names) + ")"
 	builder.WriteString("REPLACE INTO " + quoteTable + colList + " VALUES ")
 
 	return builder.String(), args

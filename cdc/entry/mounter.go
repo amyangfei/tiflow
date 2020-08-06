@@ -471,6 +471,7 @@ func (m *mounterImpl) mountRowKVEntry(tableInfo *model.TableInfo, row *rowKVEntr
 		},
 		IndieMarkCol: tableInfo.IndieMarkCol,
 		Delete:       row.Delete,
+		ColumnNames:  tableInfo.ColumnNames,
 		Columns:      cols,
 		PreColumns:   preCols,
 		// FIXME(leoppor): Correctness of conflict detection with old values
