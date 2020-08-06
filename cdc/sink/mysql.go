@@ -680,6 +680,14 @@ func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64,
 		quoteTable := quotes.QuoteSchema(row.Table.Schema, row.Table.Table)
 		// TODO(leoppro): using `UPDATE` instead of `REPLACE` if the old value is enabled
 		if len(row.PreColumns) != 0 {
+			// flush cached batch replace, we must keep the sequence of DMLs
+			if batchReplace {
+				replaceSqls, replaceValues := reduceReplace(replaces)
+				sqls = append(sqls, replaceSqls...)
+				values = append(values, replaceValues...)
+				replaces = make(map[string][][]interface{})
+			}
+
 			query, args = prepareDelete(quoteTable, row.PreColumns)
 			sqls = append(sqls, query)
 			values = append(values, args)
