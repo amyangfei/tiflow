@@ -53,15 +53,14 @@ import (
 )
 
 const (
-	defaultWorkerCount     = 16
-	defaultMaxTxnRow       = 256
-	defaultDMLMaxRetryTime = 8
-	defaultDDLMaxRetryTime = 20
-	defaultTiDBTxnMode     = "optimistic"
-	defaultFlushInterval   = time.Millisecond * 50
-	// TODO: fetch config from changefeed parameters
-	batchReplaceEnabled = true
-	batchReplaceSize    = 5
+	defaultWorkerCount         = 16
+	defaultMaxTxnRow           = 256
+	defaultDMLMaxRetryTime     = 8
+	defaultDDLMaxRetryTime     = 20
+	defaultTiDBTxnMode         = "optimistic"
+	defaultFlushInterval       = time.Millisecond * 50
+	defaultBatchReplaceEnabled = true
+	defaultBatchReplaceSize    = 20
 )
 
 type mysqlSink struct {
@@ -209,17 +208,21 @@ func (s *mysqlSink) adjustSQLMode(ctx context.Context) error {
 var _ Sink = &mysqlSink{}
 
 type sinkParams struct {
-	workerCount  int
-	maxTxnRow    int
-	tidbTxnMode  string
-	changefeedID string
-	captureAddr  string
+	workerCount         int
+	maxTxnRow           int
+	tidbTxnMode         string
+	changefeedID        string
+	captureAddr         string
+	batchReplaceEnabled bool
+	batchReplaceSize    int
 }
 
 var defaultParams = &sinkParams{
-	workerCount: defaultWorkerCount,
-	maxTxnRow:   defaultMaxTxnRow,
-	tidbTxnMode: defaultTiDBTxnMode,
+	workerCount:         defaultWorkerCount,
+	maxTxnRow:           defaultMaxTxnRow,
+	tidbTxnMode:         defaultTiDBTxnMode,
+	batchReplaceEnabled: defaultBatchReplaceEnabled,
+	batchReplaceSize:    defaultBatchReplaceSize,
 }
 
 func configureSinkURI(ctx context.Context, dsnCfg *dmysql.Config, tz *time.Location, params *sinkParams) (string, error) {
@@ -330,6 +333,21 @@ func newMySQLSink(ctx context.Context, changefeedID model.ChangeFeedID, sinkURI 
 			return nil, errors.Annotate(err, "fail to open MySQL connection")
 		}
 		tlsParam = "?tls=" + name
+	}
+	s = sinkURI.Query().Get("batch-replace-enable")
+	if s != "" {
+		enable, err := strconv.ParseBool(s)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		params.batchReplaceEnabled = enable
+		if enable && sinkURI.Query().Get("batch-replace-size") != "" {
+			size, err := strconv.Atoi(sinkURI.Query().Get("batch-replace-size"))
+			if err != nil {
+				return nil, errors.Trace(err)
+			}
+			params.batchReplaceSize = size
+		}
 	}
 	// dsn format of the driver:
 	// [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
@@ -670,7 +688,7 @@ type preparedDMLs struct {
 }
 
 // prepareDMLs converts model.RowChangedEvent list to query string list and args list
-func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64, bucket int, batchReplace bool) *preparedDMLs {
+func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64, bucket int) *preparedDMLs {
 	sqls := make([]string, 0, len(rows))
 	values := make([][]interface{}, 0, len(rows))
 	replaces := make(map[string][][]interface{})
@@ -681,8 +699,8 @@ func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64,
 		// TODO(leoppro): using `UPDATE` instead of `REPLACE` if the old value is enabled
 		if len(row.PreColumns) != 0 {
 			// flush cached batch replace, we must keep the sequence of DMLs
-			if batchReplace && len(replaces) > 0 {
-				replaceSqls, replaceValues := reduceReplace(replaces)
+			if s.params.batchReplaceEnabled && len(replaces) > 0 {
+				replaceSqls, replaceValues := reduceReplace(replaces, s.params.batchReplaceSize)
 				sqls = append(sqls, replaceSqls...)
 				values = append(values, replaceValues...)
 				replaces = make(map[string][][]interface{})
@@ -693,7 +711,7 @@ func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64,
 			values = append(values, args)
 		}
 		if len(row.Columns) != 0 {
-			if batchReplace {
+			if s.params.batchReplaceEnabled {
 				query, args = mapReplace(quoteTable, row.Columns)
 				if _, ok := replaces[query]; !ok {
 					replaces[query] = make([][]interface{}, 0)
@@ -706,8 +724,8 @@ func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64,
 			}
 		}
 	}
-	if batchReplace {
-		replaceSqls, replaceValues := reduceReplace(replaces)
+	if s.params.batchReplaceEnabled {
+		replaceSqls, replaceValues := reduceReplace(replaces, s.params.batchReplaceSize)
 		sqls = append(sqls, replaceSqls...)
 		values = append(values, replaceValues...)
 	}
@@ -729,7 +747,7 @@ func (s *mysqlSink) execDMLs(ctx context.Context, rows []*model.RowChangedEvent,
 	failpoint.Inject("MySQLSinkExecDMLError", func() {
 		failpoint.Return(errors.Trace(dmysql.ErrInvalidConn))
 	})
-	dmls := s.prepareDMLs(rows, replicaID, bucket, batchReplaceEnabled)
+	dmls := s.prepareDMLs(rows, replicaID, bucket)
 	log.Debug("prepare DMLs", zap.Any("rows", rows), zap.Strings("sqls", dmls.sqls), zap.Any("values", dmls.values))
 	if err := s.execDMLWithMaxRetries(ctx, dmls, defaultDMLMaxRetryTime, bucket); err != nil {
 		ts := make([]uint64, 0, len(rows))
@@ -784,7 +802,7 @@ func mapReplace(quoteTable string, cols map[string]*model.Column) (string, []int
 	return builder.String(), args
 }
 
-func reduceReplace(replaces map[string][][]interface{}) ([]string, [][]interface{}) {
+func reduceReplace(replaces map[string][][]interface{}, batchSize int) ([]string, [][]interface{}) {
 	nextHolderString := func(query string, valueNum int, last bool) string {
 		query += "(" + model.HolderString(valueNum) + ")"
 		if !last {
@@ -801,7 +819,7 @@ func reduceReplace(replaces map[string][][]interface{}) ([]string, [][]interface
 		last := false
 		for i, val := range vals {
 			cacheCount += 1
-			if i == len(vals)-1 || cacheCount >= batchReplaceSize {
+			if i == len(vals)-1 || cacheCount >= batchSize {
 				last = true
 			}
 			query = nextHolderString(query, len(val), last)
