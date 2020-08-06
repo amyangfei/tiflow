@@ -61,7 +61,7 @@ const (
 	defaultFlushInterval   = time.Millisecond * 50
 	// TODO: fetch config from changefeed parameters
 	batchReplaceEnabled = true
-	batchReplaceSize    = 20
+	batchReplaceSize    = 5
 )
 
 type mysqlSink struct {
@@ -687,11 +687,10 @@ func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64,
 		if len(row.Columns) != 0 {
 			if batchReplace {
 				query, args = mapReplace(quoteTable, row.Columns)
-				if vals, ok := replaces[query]; ok {
-					vals = append(vals, args)
-				} else {
-					replaces[query] = [][]interface{}{args}
+				if _, ok := replaces[query]; !ok {
+					replaces[query] = make([][]interface{}, 0)
 				}
+				replaces[query] = append(replaces[query], args)
 			} else {
 				query, args = prepareReplace(quoteTable, row.Columns)
 				sqls = append(sqls, query)
@@ -768,7 +767,7 @@ func mapReplace(quoteTable string, cols map[string]*model.Column) (string, []int
 	}
 	sort.Strings(columnNames)
 	for _, colName := range columnNames {
-		args = append(args, cols[colName])
+		args = append(args, cols[colName].Value)
 	}
 
 	colList := "(" + buildColumnList(columnNames) + ")"
@@ -778,7 +777,7 @@ func mapReplace(quoteTable string, cols map[string]*model.Column) (string, []int
 }
 
 func reduceReplace(replaces map[string][][]interface{}) ([]string, [][]interface{}) {
-	next := func(query string, valueNum int, last bool) string {
+	nextHolderString := func(query string, valueNum int, last bool) string {
 		query += "(" + model.HolderString(valueNum) + ")"
 		if !last {
 			query += ","
@@ -789,22 +788,23 @@ func reduceReplace(replaces map[string][][]interface{}) ([]string, [][]interface
 	args := make([][]interface{}, 0)
 	for replace, vals := range replaces {
 		query := replace
+		cacheCount := 0
 		cacheArgs := make([]interface{}, 0)
 		last := false
-		count := 0
 		for i, val := range vals {
-			count += 1
-			if i == len(vals)-1 || count >= batchReplaceSize {
-				count = 0
+			cacheCount += 1
+			if i == len(vals)-1 || cacheCount >= batchReplaceSize {
 				last = true
 			}
-			query = next(query, len(val), last)
+			query = nextHolderString(query, len(val), last)
 			cacheArgs = append(cacheArgs, val...)
 			if last {
 				sqls = append(sqls, query)
 				args = append(args, cacheArgs)
 				query = replace
-				cacheArgs = cacheArgs[:]
+				cacheCount = 0
+				cacheArgs = make([]interface{}, 0, len(cacheArgs))
+				last = false
 			}
 		}
 	}
