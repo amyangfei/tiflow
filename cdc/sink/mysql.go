@@ -681,7 +681,7 @@ func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64,
 		// TODO(leoppro): using `UPDATE` instead of `REPLACE` if the old value is enabled
 		if len(row.PreColumns) != 0 {
 			// flush cached batch replace, we must keep the sequence of DMLs
-			if batchReplace {
+			if batchReplace && len(replaces) > 0 {
 				replaceSqls, replaceValues := reduceReplace(replaces)
 				sqls = append(sqls, replaceSqls...)
 				values = append(values, replaceValues...)
