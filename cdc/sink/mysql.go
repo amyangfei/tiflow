@@ -334,6 +334,7 @@ func newMySQLSink(ctx context.Context, changefeedID model.ChangeFeedID, sinkURI 
 		}
 		tlsParam = "?tls=" + name
 	}
+
 	s = sinkURI.Query().Get("batch-replace-enable")
 	if s != "" {
 		enable, err := strconv.ParseBool(s)
@@ -341,14 +342,15 @@ func newMySQLSink(ctx context.Context, changefeedID model.ChangeFeedID, sinkURI 
 			return nil, errors.Trace(err)
 		}
 		params.batchReplaceEnabled = enable
-		if enable && sinkURI.Query().Get("batch-replace-size") != "" {
-			size, err := strconv.Atoi(sinkURI.Query().Get("batch-replace-size"))
-			if err != nil {
-				return nil, errors.Trace(err)
-			}
-			params.batchReplaceSize = size
-		}
 	}
+	if params.batchReplaceEnabled && sinkURI.Query().Get("batch-replace-size") != "" {
+		size, err := strconv.Atoi(sinkURI.Query().Get("batch-replace-size"))
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		params.batchReplaceSize = size
+	}
+
 	// dsn format of the driver:
 	// [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
 	username := sinkURI.User.Username()
@@ -667,14 +669,14 @@ func (s *mysqlSink) execDMLWithMaxRetries(
 				if err = tx.Commit(); err != nil {
 					return 0, checkTxnErr(errors.Trace(err))
 				}
-				return len(dmls.sqls), nil
+				return dmls.rowCount, nil
 			})
 			if err != nil {
 				return errors.Trace(err)
 			}
 			log.Debug("Exec Rows succeeded",
 				zap.String("changefeed", s.params.changefeedID),
-				zap.Int("num of Rows", len(dmls.sqls)),
+				zap.Int("num of Rows", dmls.rowCount),
 				zap.Int("bucket", bucket))
 			return nil
 		},
@@ -682,9 +684,10 @@ func (s *mysqlSink) execDMLWithMaxRetries(
 }
 
 type preparedDMLs struct {
-	sqls    []string
-	values  [][]interface{}
-	markSQL string
+	sqls     []string
+	values   [][]interface{}
+	markSQL  string
+	rowCount int
 }
 
 // prepareDMLs converts model.RowChangedEvent list to query string list and args list
@@ -692,6 +695,7 @@ func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64,
 	sqls := make([]string, 0, len(rows))
 	values := make([][]interface{}, 0, len(rows))
 	replaces := make(map[string][][]interface{})
+	rowCount := 0
 	for _, row := range rows {
 		var query string
 		var args []interface{}
@@ -709,6 +713,7 @@ func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64,
 			query, args = prepareDelete(quoteTable, row.PreColumns)
 			sqls = append(sqls, query)
 			values = append(values, args)
+			rowCount++
 		}
 		if len(row.Columns) != 0 {
 			if s.params.batchReplaceEnabled {
@@ -722,6 +727,7 @@ func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64,
 				sqls = append(sqls, query)
 				values = append(values, args)
 			}
+			rowCount++
 		}
 	}
 	if s.params.batchReplaceEnabled {
@@ -739,7 +745,9 @@ func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64,
 		updateMark := s.cyclic.UdpateSourceTableCyclicMark(
 			row.Table.Schema, row.Table.Table, uint64(bucket), replicaID, row.StartTs)
 		dmls.markSQL = updateMark
+		rowCount++
 	}
+	dmls.rowCount = rowCount
 	return dmls
 }
 
