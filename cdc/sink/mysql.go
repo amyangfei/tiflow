@@ -63,6 +63,7 @@ const (
 	defaultReadTimeout         = "2m"
 	defaultWriteTimeout        = "2m"
 	defaultSafeMode            = true
+	defaultPartialWhere        = true
 )
 
 var (
@@ -73,6 +74,8 @@ var (
 		"tidb+ssl":  true,
 	}
 )
+
+type whereSliceFunc func(cols []*model.Column) ([]string, []interface{})
 
 type mysqlSink struct {
 	db     *sql.DB
@@ -94,6 +97,8 @@ type mysqlSink struct {
 	// metrics used by mysql sink only
 	metricConflictDetectDurationHis prometheus.Observer
 	metricBucketSizeCounters        []prometheus.Counter
+
+	genWhereFunc whereSliceFunc
 }
 
 func (s *mysqlSink) EmitRowChangedEvents(ctx context.Context, rows ...*model.RowChangedEvent) error {
@@ -276,6 +281,8 @@ type sinkParams struct {
 	writeTimeout        string
 	enableOldValue      bool
 	safeMode            bool
+	// whether to use handle key only in where condition
+	partialWhere bool
 }
 
 func (s *sinkParams) Clone() *sinkParams {
@@ -292,6 +299,7 @@ var defaultParams = &sinkParams{
 	readTimeout:         defaultReadTimeout,
 	writeTimeout:        defaultWriteTimeout,
 	safeMode:            defaultSafeMode,
+	partialWhere:        defaultPartialWhere,
 }
 
 func checkTiDBVariable(ctx context.Context, db *sql.DB, variableName, defaultValue string) (string, error) {
@@ -450,6 +458,15 @@ func newMySQLSink(
 		params.safeMode = safeModeEnabled
 	}
 
+	s = sinkURI.Query().Get("partial-where")
+	if s != "" {
+		partialWhere, err := strconv.ParseBool(s)
+		if err != nil {
+			return nil, cerror.WrapError(cerror.ErrMySQLInvalidConfig, err)
+		}
+		params.partialWhere = partialWhere
+	}
+
 	params.enableOldValue = replicaConfig.EnableOldValue
 
 	// dsn format of the driver:
@@ -519,6 +536,11 @@ func newMySQLSink(
 		metricConflictDetectDurationHis: metricConflictDetectDurationHis,
 		metricBucketSizeCounters:        metricBucketSizeCounters,
 		errCh:                           make(chan error, 1),
+	}
+	if params.partialWhere {
+		sink.genWhereFunc = partialWhereSlice
+	} else {
+		sink.genWhereFunc = fullWhereSlice
 	}
 
 	if val, ok := opts[mark.OptCyclicConfig]; ok {
@@ -820,7 +842,7 @@ func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64,
 		// Translate to UPDATE if old value is enabled, not in safe mode and is update event
 		if translateToInsert && len(row.PreColumns) != 0 && len(row.Columns) != 0 {
 			flushCacheDMLs()
-			query, args = prepareUpdate(quoteTable, row.PreColumns, row.Columns)
+			query, args = prepareUpdate(quoteTable, row.PreColumns, row.Columns, s.genWhereFunc)
 			if query != "" {
 				sqls = append(sqls, query)
 				values = append(values, args)
@@ -834,7 +856,7 @@ func (s *mysqlSink) prepareDMLs(rows []*model.RowChangedEvent, replicaID uint64,
 		// update will be translated to DELETE + INSERT(or REPLACE) SQL.
 		if len(row.PreColumns) != 0 {
 			flushCacheDMLs()
-			query, args = prepareDelete(quoteTable, row.PreColumns)
+			query, args = prepareDelete(quoteTable, row.PreColumns, s.genWhereFunc)
 			if query != "" {
 				sqls = append(sqls, query)
 				values = append(values, args)
@@ -977,7 +999,7 @@ func reduceReplace(replaces map[string][][]interface{}, batchSize int) ([]string
 	return sqls, args
 }
 
-func prepareUpdate(quoteTable string, preCols, cols []*model.Column) (string, []interface{}) {
+func prepareUpdate(quoteTable string, preCols, cols []*model.Column, genWhere whereSliceFunc) (string, []interface{}) {
 	var builder strings.Builder
 	builder.WriteString("UPDATE " + quoteTable + " SET ")
 
@@ -1002,7 +1024,7 @@ func prepareUpdate(quoteTable string, preCols, cols []*model.Column) (string, []
 	}
 
 	builder.WriteString(" WHERE ")
-	colNames, wargs := whereSlice(preCols)
+	colNames, wargs := genWhere(preCols)
 	if len(wargs) == 0 {
 		return "", nil
 	}
@@ -1022,11 +1044,11 @@ func prepareUpdate(quoteTable string, preCols, cols []*model.Column) (string, []
 	return sql, args
 }
 
-func prepareDelete(quoteTable string, cols []*model.Column) (string, []interface{}) {
+func prepareDelete(quoteTable string, cols []*model.Column, genWhere whereSliceFunc) (string, []interface{}) {
 	var builder strings.Builder
 	builder.WriteString("DELETE FROM " + quoteTable + " WHERE ")
 
-	colNames, wargs := whereSlice(cols)
+	colNames, wargs := genWhere(cols)
 	if len(wargs) == 0 {
 		return "", nil
 	}
@@ -1047,12 +1069,20 @@ func prepareDelete(quoteTable string, cols []*model.Column) (string, []interface
 	return sql, args
 }
 
-func whereSlice(cols []*model.Column) (colNames []string, args []interface{}) {
+func partialWhereSlice(cols []*model.Column) (colNames []string, args []interface{}) {
 	// Try to use unique key values when available
 	for _, col := range cols {
 		if col == nil || !col.Flag.IsHandleKey() {
 			continue
 		}
+		colNames = append(colNames, col.Name)
+		args = append(args, col.Value)
+	}
+	return
+}
+
+func fullWhereSlice(cols []*model.Column) (colNames []string, args []interface{}) {
+	for _, col := range cols {
 		colNames = append(colNames, col.Name)
 		args = append(args, col.Value)
 	}
