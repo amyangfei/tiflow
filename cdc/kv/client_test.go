@@ -1839,7 +1839,6 @@ func (s *etcdSuite) testEventCommitTsFallback(c *check.C, events []*cdcpb.Change
 	clientWg.Wait()
 
 	cancel()
-
 }
 
 // TestCommittedFallback tests kv client should panic when receiving a fallback committed event
@@ -1862,7 +1861,8 @@ func (s *etcdSuite) TestCommittedFallback(c *check.C) {
 					},
 				},
 			},
-		}}}
+		}},
+	}
 	s.testEventCommitTsFallback(c, events)
 }
 
