@@ -104,7 +104,11 @@ func (t *tablePipelineImpl) AsyncStop(targetTs model.Ts) bool {
 		Tp:        pipeline.CommandTypeStopAtTs,
 		StoppedTs: targetTs,
 	}))
-	log.Info("send async stop signal to table", zap.Int64("tableID", t.tableID), zap.Uint64("targetTs", targetTs))
+	log.Info("send async stop signal to table",
+		zap.Int64("tableID", t.tableID),
+		zap.Uint64("targetTs", targetTs),
+		zap.Error(err),
+	)
 	if err != nil {
 		if cerror.ErrPipelineTryAgain.Equal(err) {
 			return false
