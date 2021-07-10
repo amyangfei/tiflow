@@ -66,6 +66,7 @@ func NewPipeline(ctx context.Context, tickDuration time.Duration) *Pipeline {
 					log.Debug("Error encountered when calling SendToFirstNode", zap.Error(err))
 				}
 			case <-ctx.Done():
+				time.Sleep(time.Second * 10)
 				p.close()
 				return
 			}
