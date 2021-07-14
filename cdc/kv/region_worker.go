@@ -275,6 +275,7 @@ func (w *regionWorker) handleSingleRegionError(ctx context.Context, err error, s
 	if w.checkRegionStateEmpty() {
 		cancel, ok := w.session.getStreamCancel(state.sri.rpcCtx.Addr)
 		if ok {
+			log.Info("stream is canceled", zap.String("addr", state.sri.rpcCtx.Addr))
 			// cancel the gRPC stream
 			cancel()
 		}
