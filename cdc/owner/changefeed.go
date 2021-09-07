@@ -398,6 +398,13 @@ func (c *changefeed) asyncExecDDL(ctx cdcContext.Context, job *timodel.Job) (don
 		if err != nil {
 			return false, errors.Trace(err)
 		}
+		// TODO: Log `apply job` to keep compatibility with release branch. We
+		// can remove this log if TiCDC has an easy way to find the history of
+		// DDL and skip DDL.
+		log.Info("apply job", zap.Stringer("job", job),
+			zap.String("schema", job.SchemaName), zap.String("query", job.Query),
+			zap.Uint64("start-ts", job.StartTS), zap.Uint64("ts", job.BinlogInfo.FinishedTS),
+		)
 		err = c.schema.HandleDDL(job)
 		if err != nil {
 			return false, errors.Trace(err)
