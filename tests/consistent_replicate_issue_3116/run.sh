@@ -47,11 +47,10 @@ function run() {
 		run_kafka_consumer $WORK_DIR "kafka://127.0.0.1:9092/$TOPIC_NAME?partition-num=4&version=${KAFKA_VERSION}"
 	fi
 
-	run_sql "CREATE DATABASE consistent_replicate_local;" ${UP_TIDB_HOST} ${UP_TIDB_PORT}
-	go-ycsb load mysql -P $CUR/conf/workload -p mysql.host=${UP_TIDB_HOST} -p mysql.port=${UP_TIDB_PORT} -p mysql.user=root -p mysql.db=consistent_replicate_local
-	run_sql "CREATE table consistent_replicate_local.check1(id int primary key);" ${UP_TIDB_HOST} ${UP_TIDB_PORT}
-	check_table_exists "consistent_replicate_local.USERTABLE" ${DOWN_TIDB_HOST} ${DOWN_TIDB_PORT}
-	check_table_exists "consistent_replicate_local.check1" ${DOWN_TIDB_HOST} ${DOWN_TIDB_PORT}
+	run_sql "CREATE DATABASE consistent_replicate_issue_3116;" ${UP_TIDB_HOST} ${UP_TIDB_PORT}
+    run_sql "CREATE table consistent_replicate_issue_3116.t1(id int primary key auto_increment, val varchar(20) not null default '');" ${UP_TIDB_HOST} ${UP_TIDB_PORT}
+	run_sql "INSERT INTO consistent_replicate_issue_3116.t1 VALUES (1,''),(2,'a'),(3,'abc');" ${UP_TIDB_HOST} ${UP_TIDB_PORT}
+	check_table_exists "consistent_replicate_issue_3116.t1" ${DOWN_TIDB_HOST} ${DOWN_TIDB_PORT}
 	check_sync_diff $WORK_DIR $CUR/conf/diff_config.toml
 
 	# Inject the failpoint to prevent sink execution, but the global resolved can be moved forward.
@@ -60,8 +59,7 @@ function run() {
 	export GO_FAILPOINTS='github.com/pingcap/ticdc/cdc/sink/MySQLSinkHangLongTime=return(true)'
 	run_cdc_server --workdir $WORK_DIR --binary $CDC_BINARY
 
-	run_sql "create table consistent_replicate_local.USERTABLE2 like consistent_replicate_local.USERTABLE" ${UP_TIDB_HOST} ${UP_TIDB_PORT}
-	run_sql "insert into consistent_replicate_local.USERTABLE2 select * from consistent_replicate_local.USERTABLE" ${UP_TIDB_HOST} ${UP_TIDB_PORT}
+    run_sql "INSERT INTO consistent_replicate_issue_3116.t1 (id) VALUES (7),(8);" ${UP_TIDB_HOST} ${UP_TIDB_PORT}
 
 	# to ensure row changed events have been replicated to TiCDC
 	sleep 5
@@ -75,7 +73,7 @@ function run() {
 	check_sync_diff $WORK_DIR $CUR/conf/diff_config.toml
 }
 
-trap stop_tidb_cluster EXIT
+# trap stop_tidb_cluster EXIT
 run $*
 check_logs $WORK_DIR
 echo "[$(date)] <<<<<< run test case $TEST_NAME success! >>>>>>"

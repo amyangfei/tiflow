@@ -138,6 +138,7 @@ func (ra *RedoApplier) consumeLogs(ctx context.Context) error {
 		}
 
 		for _, redoLog := range redoLogs {
+			log.Info("read redo log", zap.Any("redo", redoLog))
 			if len(cachedRows) >= emitBatch {
 				err := s.EmitRowChangedEvents(ctx, cachedRows...)
 				if err != nil {
