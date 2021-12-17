@@ -21,16 +21,16 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/config"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/errorutil"
+	"github.com/amyangfei/tiflow/pkg/filter"
+	"github.com/amyangfei/tiflow/pkg/quotes"
 	dmysql "github.com/go-sql-driver/mysql"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/config"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/errorutil"
-	"github.com/pingcap/ticdc/pkg/filter"
-	"github.com/pingcap/ticdc/pkg/quotes"
 	"go.uber.org/zap"
 )
 

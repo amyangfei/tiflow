@@ -20,12 +20,12 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/pingcap/ticdc/dm/dm/config"
-	"github.com/pingcap/ticdc/dm/dm/master/metrics"
-	"github.com/pingcap/ticdc/dm/dm/master/workerrpc"
-	"github.com/pingcap/ticdc/dm/pkg/ha"
-	"github.com/pingcap/ticdc/dm/pkg/log"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/dm/config"
+	"github.com/amyangfei/tiflow/dm/dm/master/metrics"
+	"github.com/amyangfei/tiflow/dm/dm/master/workerrpc"
+	"github.com/amyangfei/tiflow/dm/pkg/ha"
+	"github.com/amyangfei/tiflow/dm/pkg/log"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
 )
 
 // WorkerStage represents the stage of a DM-worker instance.

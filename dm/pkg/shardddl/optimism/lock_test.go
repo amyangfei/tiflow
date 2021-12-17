@@ -24,9 +24,9 @@ import (
 	"github.com/pingcap/tidb/util/mock"
 	"go.etcd.io/etcd/integration"
 
-	"github.com/pingcap/ticdc/dm/pkg/log"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
-	"github.com/pingcap/ticdc/dm/pkg/utils"
+	"github.com/amyangfei/tiflow/dm/pkg/log"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/pkg/utils"
 )
 
 type testLock struct{}

@@ -16,7 +16,7 @@ package openapi
 import (
 	"encoding/json"
 
-	"github.com/pingcap/ticdc/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
 )
 
 var defaultMetaSchema = "dm_meta"

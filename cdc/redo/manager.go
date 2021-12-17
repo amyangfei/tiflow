@@ -22,12 +22,12 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/redo/writer"
+	"github.com/amyangfei/tiflow/pkg/config"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/util"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/redo/writer"
-	"github.com/pingcap/ticdc/pkg/config"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/util"
 	"github.com/pingcap/tidb/br/pkg/storage"
 	"go.uber.org/zap"
 )

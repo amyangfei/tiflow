@@ -22,12 +22,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/security"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/jarcoal/httpmock"
 	"github.com/linkedin/goavro/v2"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/security"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 type AvroSchemaRegistrySuite struct{}

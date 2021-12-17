@@ -27,11 +27,11 @@ import (
 
 	lightningLog "github.com/pingcap/tidb/br/pkg/lightning/log"
 
-	"github.com/pingcap/ticdc/dm/dm/ctl/common"
-	"github.com/pingcap/ticdc/dm/dm/worker"
-	"github.com/pingcap/ticdc/dm/pkg/log"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
-	"github.com/pingcap/ticdc/dm/pkg/utils"
+	"github.com/amyangfei/tiflow/dm/dm/ctl/common"
+	"github.com/amyangfei/tiflow/dm/dm/worker"
+	"github.com/amyangfei/tiflow/dm/pkg/log"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/pkg/utils"
 )
 
 func main() {

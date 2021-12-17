@@ -18,15 +18,15 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/pingcap/ticdc/dm/pkg/log"
+	"github.com/amyangfei/tiflow/dm/pkg/log"
 
 	"github.com/go-mysql-org/go-mysql/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/pingcap/errors"
 
-	"github.com/pingcap/ticdc/dm/pkg/binlog"
-	"github.com/pingcap/ticdc/dm/pkg/gtid"
-	"github.com/pingcap/ticdc/dm/tests/utils"
+	"github.com/amyangfei/tiflow/dm/pkg/binlog"
+	"github.com/amyangfei/tiflow/dm/pkg/gtid"
+	"github.com/amyangfei/tiflow/dm/tests/utils"
 )
 
 var compareMap = map[string]map[int]struct{}{

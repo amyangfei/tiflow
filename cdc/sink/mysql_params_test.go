@@ -21,8 +21,8 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	dmysql "github.com/go-sql-driver/mysql"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 	"github.com/stretchr/testify/require"
 )
 

@@ -19,10 +19,10 @@ import (
 	"encoding/binary"
 	"encoding/json"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/config"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/config"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
 	model2 "github.com/pingcap/tidb/parser/model"
 	"github.com/pingcap/tidb/parser/mysql"
 	"github.com/tikv/pd/pkg/tsoutil"

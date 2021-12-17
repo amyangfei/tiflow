@@ -21,12 +21,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pingcap/ticdc/dm/dm/config"
-	"github.com/pingcap/ticdc/dm/pkg/conn"
-	tcontext "github.com/pingcap/ticdc/dm/pkg/context"
-	"github.com/pingcap/ticdc/dm/pkg/cputil"
-	"github.com/pingcap/ticdc/dm/pkg/log"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/dm/config"
+	"github.com/amyangfei/tiflow/dm/pkg/conn"
+	tcontext "github.com/amyangfei/tiflow/dm/pkg/context"
+	"github.com/amyangfei/tiflow/dm/pkg/cputil"
+	"github.com/amyangfei/tiflow/dm/pkg/log"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
 
 	"github.com/pingcap/tidb-tools/pkg/dbutil"
 	"go.uber.org/zap"

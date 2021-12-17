@@ -17,8 +17,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 	"github.com/spf13/cobra"
 )
 

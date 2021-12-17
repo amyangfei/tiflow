@@ -20,13 +20,13 @@ import (
 	"sort"
 	"time"
 
+	"github.com/amyangfei/tiflow/pkg/config"
+	"github.com/amyangfei/tiflow/pkg/cyclic/mark"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	cerrors "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/version"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/pkg/config"
-	"github.com/pingcap/ticdc/pkg/cyclic/mark"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	cerrors "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/version"
 	"github.com/tikv/client-go/v2/oracle"
 	"go.uber.org/zap"
 )

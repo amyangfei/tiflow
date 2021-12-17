@@ -16,8 +16,8 @@ package util
 import (
 	"context"
 
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 	"github.com/pingcap/tidb/store/mockstore"
 	"go.uber.org/zap"
 )

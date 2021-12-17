@@ -20,7 +20,7 @@ import (
 	. "github.com/pingcap/check"
 	"github.com/pingcap/errors"
 
-	"github.com/pingcap/ticdc/dm/relay"
+	"github.com/amyangfei/tiflow/dm/relay"
 )
 
 func (s *testSyncerSuite) TestIsConnectionRefusedError(c *C) {

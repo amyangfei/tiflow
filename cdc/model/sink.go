@@ -19,9 +19,9 @@ import (
 	"sync"
 	"unsafe"
 
+	"github.com/amyangfei/tiflow/pkg/quotes"
+	"github.com/amyangfei/tiflow/pkg/util"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/pkg/quotes"
-	"github.com/pingcap/ticdc/pkg/util"
 	"github.com/pingcap/tidb/parser/model"
 	"go.uber.org/zap"
 )

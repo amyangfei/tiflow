@@ -16,8 +16,8 @@ package cli
 import (
 	"os"
 
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 type cliSuite struct{}

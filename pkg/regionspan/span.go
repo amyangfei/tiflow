@@ -18,8 +18,8 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/log"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
 	"github.com/pingcap/tidb/kv"
 	"github.com/pingcap/tidb/tablecodec"
 	"github.com/pingcap/tidb/util/codec"

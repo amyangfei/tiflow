@@ -19,7 +19,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/pingcap/ticdc/pkg/regionspan"
+	"github.com/amyangfei/tiflow/pkg/regionspan"
 )
 
 // Frontier checks resolved event of spans and moves the global resolved ts ahead

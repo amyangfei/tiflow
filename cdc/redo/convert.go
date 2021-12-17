@@ -16,7 +16,7 @@ package redo
 import (
 	"bytes"
 
-	"github.com/pingcap/ticdc/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/model"
 	pmodel "github.com/pingcap/tidb/parser/model"
 )
 

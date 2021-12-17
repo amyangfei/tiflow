@@ -23,9 +23,9 @@ import (
 	"go.etcd.io/etcd/clientv3"
 	"go.uber.org/zap"
 
-	"github.com/pingcap/ticdc/dm/dm/master/metrics"
-	"github.com/pingcap/ticdc/dm/pkg/log"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/dm/master/metrics"
+	"github.com/amyangfei/tiflow/dm/pkg/log"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
 )
 
 // DropColumnStage represents whether drop column done for a sharding table.

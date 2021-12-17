@@ -27,8 +27,8 @@ import (
 	"github.com/pingcap/errors"
 	"github.com/pingcap/tidb/parser"
 
-	"github.com/pingcap/ticdc/dm/pkg/binlog/event"
-	"github.com/pingcap/ticdc/dm/pkg/gtid"
+	"github.com/amyangfei/tiflow/dm/pkg/binlog/event"
+	"github.com/amyangfei/tiflow/dm/pkg/gtid"
 )
 
 var _ = check.Suite(&testFileUtilSuite{})

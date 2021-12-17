@@ -16,8 +16,8 @@ package capture
 import (
 	"strings"
 
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/errors"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
 )
 
 // httpBadRequestError is some errors that will cause a BadRequestError in http handler

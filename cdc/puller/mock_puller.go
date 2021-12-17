@@ -18,11 +18,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/regionspan"
 	"github.com/pingcap/check"
 	"github.com/pingcap/kvproto/pkg/kvrpcpb"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/regionspan"
 	"github.com/pingcap/tidb/domain"
 	tidbkv "github.com/pingcap/tidb/kv"
 	timodel "github.com/pingcap/tidb/parser/model"

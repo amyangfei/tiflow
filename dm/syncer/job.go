@@ -21,7 +21,7 @@ import (
 	"github.com/go-mysql-org/go-mysql/replication"
 	"github.com/pingcap/tidb-tools/pkg/filter"
 
-	"github.com/pingcap/ticdc/dm/pkg/binlog"
+	"github.com/amyangfei/tiflow/dm/pkg/binlog"
 )
 
 type opType byte

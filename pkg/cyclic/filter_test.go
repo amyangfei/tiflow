@@ -16,9 +16,9 @@ package cyclic
 import (
 	"testing"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/cyclic/mark"
 	"github.com/davecgh/go-spew/spew"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/cyclic/mark"
 	"github.com/stretchr/testify/require"
 )
 

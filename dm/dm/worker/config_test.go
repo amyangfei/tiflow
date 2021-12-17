@@ -21,7 +21,7 @@ import (
 	"github.com/kami-zh/go-capturer"
 	"github.com/pingcap/check"
 
-	"github.com/pingcap/ticdc/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
 )
 
 var (

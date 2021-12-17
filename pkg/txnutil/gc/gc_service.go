@@ -17,10 +17,10 @@ import (
 	"context"
 	"math"
 
+	cerrors "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/retry"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	cerrors "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/retry"
 	pd "github.com/tikv/pd/client"
 	"go.uber.org/zap"
 )

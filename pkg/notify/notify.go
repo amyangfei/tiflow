@@ -17,7 +17,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pingcap/ticdc/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/errors"
 )
 
 // Notifier provides a one-to-many notification mechanism

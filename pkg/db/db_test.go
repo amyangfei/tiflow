@@ -19,8 +19,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/amyangfei/tiflow/pkg/config"
 	"github.com/cockroachdb/pebble"
-	"github.com/pingcap/ticdc/pkg/config"
 	"github.com/stretchr/testify/require"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/opt"

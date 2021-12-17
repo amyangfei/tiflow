@@ -16,9 +16,9 @@ package scheduler
 import (
 	"sync"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/context"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/context"
 )
 
 // Design Notes:

@@ -20,11 +20,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/notify"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/notify"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/errgroup"
 )

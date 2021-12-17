@@ -14,7 +14,7 @@
 package dispatcher
 
 import (
-	"github.com/pingcap/ticdc/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/model"
 )
 
 type defaultDispatcher struct {

@@ -19,9 +19,9 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/amyangfei/tiflow/cdc/kv"
+	"github.com/amyangfei/tiflow/cdc/model"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/cdc/kv"
-	"github.com/pingcap/ticdc/cdc/model"
 	ticonfig "github.com/pingcap/tidb/config"
 	"github.com/pingcap/tidb/domain"
 	tidbkv "github.com/pingcap/tidb/kv"

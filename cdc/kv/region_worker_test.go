@@ -18,9 +18,9 @@ import (
 	"runtime"
 	"sync"
 
+	"github.com/amyangfei/tiflow/pkg/config"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/pkg/config"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 type regionWorkerSuite struct{}

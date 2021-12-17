@@ -16,8 +16,8 @@ package actor
 import (
 	"context"
 
-	"github.com/pingcap/ticdc/pkg/actor/message"
-	cerrors "github.com/pingcap/ticdc/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/actor/message"
+	cerrors "github.com/amyangfei/tiflow/pkg/errors"
 )
 
 var errMailboxFull = cerrors.ErrMailboxFull.FastGenByArgs()

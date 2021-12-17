@@ -17,7 +17,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/pingcap/ticdc/pkg/config"
+	"github.com/amyangfei/tiflow/pkg/config"
 	"github.com/stretchr/testify/require"
 )
 

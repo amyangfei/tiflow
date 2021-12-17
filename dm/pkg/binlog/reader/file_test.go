@@ -26,10 +26,10 @@ import (
 	. "github.com/pingcap/check"
 	"github.com/pingcap/errors"
 
-	"github.com/pingcap/ticdc/dm/pkg/binlog/common"
-	"github.com/pingcap/ticdc/dm/pkg/binlog/event"
-	"github.com/pingcap/ticdc/dm/pkg/gtid"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/pkg/binlog/common"
+	"github.com/amyangfei/tiflow/dm/pkg/binlog/event"
+	"github.com/amyangfei/tiflow/dm/pkg/gtid"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
 )
 
 var _ = Suite(&testFileReaderSuite{})

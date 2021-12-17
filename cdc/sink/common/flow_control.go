@@ -18,9 +18,9 @@ import (
 	"sync"
 	"sync/atomic"
 
+	cerrors "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/edwingeng/deque"
 	"github.com/pingcap/errors"
-	cerrors "github.com/pingcap/ticdc/pkg/errors"
 	"go.uber.org/zap"
 )
 

@@ -16,16 +16,16 @@ package owner
 import (
 	"sync/atomic"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	pscheduler "github.com/amyangfei/tiflow/cdc/scheduler"
+	"github.com/amyangfei/tiflow/pkg/config"
+	"github.com/amyangfei/tiflow/pkg/context"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/orchestrator"
+	"github.com/amyangfei/tiflow/pkg/p2p"
+	"github.com/amyangfei/tiflow/pkg/version"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	pscheduler "github.com/pingcap/ticdc/cdc/scheduler"
-	"github.com/pingcap/ticdc/pkg/config"
-	"github.com/pingcap/ticdc/pkg/context"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/orchestrator"
-	"github.com/pingcap/ticdc/pkg/p2p"
-	"github.com/pingcap/ticdc/pkg/version"
 	"go.uber.org/zap"
 )
 

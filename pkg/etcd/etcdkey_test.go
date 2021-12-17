@@ -14,8 +14,8 @@
 package etcd
 
 import (
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 type etcdkeySuite struct{}

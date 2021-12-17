@@ -13,7 +13,7 @@
 
 package dispatcher
 
-import "github.com/pingcap/ticdc/cdc/model"
+import "github.com/amyangfei/tiflow/cdc/model"
 
 type tsDispatcher struct {
 	partitionNum int32

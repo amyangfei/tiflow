@@ -25,11 +25,11 @@ import (
 	"github.com/pingcap/errors"
 	"go.uber.org/zap"
 
-	"github.com/pingcap/ticdc/dm/dm/ctl/common"
-	"github.com/pingcap/ticdc/dm/dm/master"
-	"github.com/pingcap/ticdc/dm/pkg/log"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
-	"github.com/pingcap/ticdc/dm/pkg/utils"
+	"github.com/amyangfei/tiflow/dm/dm/ctl/common"
+	"github.com/amyangfei/tiflow/dm/dm/master"
+	"github.com/amyangfei/tiflow/dm/pkg/log"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/pkg/utils"
 )
 
 func main() {

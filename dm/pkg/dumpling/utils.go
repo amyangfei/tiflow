@@ -24,9 +24,9 @@ import (
 	"github.com/docker/go-units"
 	"github.com/go-mysql-org/go-mysql/mysql"
 
-	"github.com/pingcap/ticdc/dm/pkg/binlog"
-	"github.com/pingcap/ticdc/dm/pkg/gtid"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/pkg/binlog"
+	"github.com/amyangfei/tiflow/dm/pkg/gtid"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
 )
 
 // ParseMetaData parses mydumper's output meta file and returns binlog location.

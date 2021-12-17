@@ -20,8 +20,8 @@ import (
 	"github.com/pingcap/check"
 	"github.com/pingcap/errors"
 
-	"github.com/pingcap/ticdc/dm/dm/pb"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/dm/pb"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
 )
 
 func TestSuite(t *testing.T) {

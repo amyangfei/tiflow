@@ -16,14 +16,14 @@ package owner
 import (
 	"math"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	schedulerv2 "github.com/amyangfei/tiflow/cdc/scheduler"
+	cdcContext "github.com/amyangfei/tiflow/pkg/context"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/orchestrator"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	schedulerv2 "github.com/pingcap/ticdc/cdc/scheduler"
-	cdcContext "github.com/pingcap/ticdc/pkg/context"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/orchestrator"
 	"go.uber.org/zap"
 )
 

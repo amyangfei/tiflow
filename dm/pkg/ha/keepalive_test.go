@@ -20,7 +20,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/pingcap/ticdc/dm/pkg/utils"
+	"github.com/amyangfei/tiflow/dm/pkg/utils"
 
 	. "github.com/pingcap/check"
 )

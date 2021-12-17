@@ -24,11 +24,11 @@ import (
 
 	"github.com/pingcap/failpoint"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/sorter"
+	"github.com/amyangfei/tiflow/cdc/sorter/unified"
+	"github.com/amyangfei/tiflow/pkg/config"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/sorter"
-	"github.com/pingcap/ticdc/cdc/sorter/unified"
-	"github.com/pingcap/ticdc/pkg/config"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 )
@@ -43,7 +43,7 @@ var (
 func main() {
 	flag.Parse()
 	log.SetLevel(zap.DebugLevel)
-	err := failpoint.Enable("github.com/pingcap/ticdc/cdc/sorter/unified/sorterDebug", "return(true)")
+	err := failpoint.Enable("github.com/amyangfei/tiflow/cdc/sorter/unified/sorterDebug", "return(true)")
 	if err != nil {
 		log.Fatal("Could not enable failpoint", zap.Error(err))
 	}

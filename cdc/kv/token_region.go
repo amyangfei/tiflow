@@ -18,8 +18,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/amyangfei/tiflow/pkg/util"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/pkg/util"
 	"github.com/prometheus/client_golang/prometheus"
 )
 

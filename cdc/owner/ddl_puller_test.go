@@ -19,12 +19,12 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	cdcContext "github.com/amyangfei/tiflow/pkg/context"
+	"github.com/amyangfei/tiflow/pkg/retry"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/cdc/model"
-	cdcContext "github.com/pingcap/ticdc/pkg/context"
-	"github.com/pingcap/ticdc/pkg/retry"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 	timodel "github.com/pingcap/tidb/parser/model"
 	"github.com/pingcap/tidb/util/codec"
 )

@@ -14,9 +14,9 @@
 package p2p
 
 import (
+	proto "github.com/amyangfei/tiflow/proto/p2p"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/failpoint"
-	proto "github.com/pingcap/ticdc/proto/p2p"
 )
 
 const (

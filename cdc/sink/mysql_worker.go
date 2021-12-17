@@ -18,11 +18,11 @@ import (
 	"runtime"
 	"sync"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/notify"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/notify"
 	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 )

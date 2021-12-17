@@ -16,9 +16,9 @@ package config
 import (
 	"fmt"
 
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
 )
 
 // SinkConfig represents sink config for a changefeed

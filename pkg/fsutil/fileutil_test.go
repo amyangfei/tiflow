@@ -20,7 +20,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/pingcap/ticdc/pkg/leakutil"
+	"github.com/amyangfei/tiflow/pkg/leakutil"
 	"github.com/stretchr/testify/require"
 )
 

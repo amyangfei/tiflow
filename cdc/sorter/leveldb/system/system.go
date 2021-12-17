@@ -20,14 +20,14 @@ import (
 	"sync"
 	"time"
 
+	lsorter "github.com/amyangfei/tiflow/cdc/sorter/leveldb"
+	"github.com/amyangfei/tiflow/pkg/actor"
+	"github.com/amyangfei/tiflow/pkg/actor/message"
+	"github.com/amyangfei/tiflow/pkg/config"
+	"github.com/amyangfei/tiflow/pkg/db"
+	cerrors "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	lsorter "github.com/pingcap/ticdc/cdc/sorter/leveldb"
-	"github.com/pingcap/ticdc/pkg/actor"
-	"github.com/pingcap/ticdc/pkg/actor/message"
-	"github.com/pingcap/ticdc/pkg/config"
-	"github.com/pingcap/ticdc/pkg/db"
-	cerrors "github.com/pingcap/ticdc/pkg/errors"
 	"go.uber.org/zap"
 )
 

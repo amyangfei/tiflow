@@ -20,12 +20,12 @@ import (
 	"os"
 	"sync/atomic"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/sorter/encoding"
+	cerrors "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/sorter/encoding"
-	cerrors "github.com/pingcap/ticdc/pkg/errors"
 	"go.uber.org/zap"
 )
 

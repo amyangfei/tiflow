@@ -16,8 +16,8 @@ import (
 	"math"
 	"math/rand"
 
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 	"go.etcd.io/etcd/clientv3"
 )
 

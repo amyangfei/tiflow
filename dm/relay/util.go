@@ -21,8 +21,8 @@ import (
 
 	"github.com/pingcap/errors"
 
-	"github.com/pingcap/ticdc/dm/pkg/terror"
-	"github.com/pingcap/ticdc/dm/pkg/utils"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/pkg/utils"
 )
 
 // isNewServer checks whether is connecting to a new server.

@@ -21,8 +21,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 	"golang.org/x/sync/errgroup"
 )
 

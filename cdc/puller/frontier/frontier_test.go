@@ -19,9 +19,9 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/amyangfei/tiflow/pkg/regionspan"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/pkg/regionspan"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 type spanFrontierSuite struct{}

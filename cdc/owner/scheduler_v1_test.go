@@ -17,10 +17,10 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/orchestrator"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/orchestrator"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 var _ = check.Suite(&schedulerSuite{})

@@ -23,9 +23,9 @@ import (
 	"go.etcd.io/etcd/mvcc/mvccpb"
 	"go.uber.org/zap"
 
-	"github.com/pingcap/ticdc/dm/dm/common"
-	"github.com/pingcap/ticdc/dm/pkg/etcdutil"
-	"github.com/pingcap/ticdc/dm/pkg/log"
+	"github.com/amyangfei/tiflow/dm/dm/common"
+	"github.com/amyangfei/tiflow/dm/pkg/etcdutil"
+	"github.com/amyangfei/tiflow/dm/pkg/log"
 )
 
 var (

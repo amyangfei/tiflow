@@ -18,21 +18,21 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/entry"
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/redo"
+	"github.com/amyangfei/tiflow/cdc/sorter"
+	"github.com/amyangfei/tiflow/cdc/sorter/leveldb"
+	"github.com/amyangfei/tiflow/cdc/sorter/memory"
+	"github.com/amyangfei/tiflow/cdc/sorter/unified"
+	"github.com/amyangfei/tiflow/pkg/actor"
+	"github.com/amyangfei/tiflow/pkg/actor/message"
+	"github.com/amyangfei/tiflow/pkg/config"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/pipeline"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/entry"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/redo"
-	"github.com/pingcap/ticdc/cdc/sorter"
-	"github.com/pingcap/ticdc/cdc/sorter/leveldb"
-	"github.com/pingcap/ticdc/cdc/sorter/memory"
-	"github.com/pingcap/ticdc/cdc/sorter/unified"
-	"github.com/pingcap/ticdc/pkg/actor"
-	"github.com/pingcap/ticdc/pkg/actor/message"
-	"github.com/pingcap/ticdc/pkg/config"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/pipeline"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 )
@@ -108,7 +108,7 @@ func (n *sorterNode) Init(ctx pipeline.NodeContext) error {
 			sorter = levelSorter
 		} else {
 			// Sorter dir has been set and checked when server starts.
-			// See https://github.com/pingcap/ticdc/blob/9dad09/cdc/server.go#L275
+			// See https://github.com/amyangfei/tiflow/blob/9dad09/cdc/server.go#L275
 			sortDir := config.GetGlobalServerConfig().Sorter.SortDir
 			var err error
 			sorter, err = unified.NewUnifiedSorter(sortDir, ctx.ChangefeedVars().ID, n.tableName, n.tableID, ctx.GlobalVars().CaptureInfo.AdvertiseAddr)

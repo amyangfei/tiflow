@@ -18,9 +18,9 @@ import (
 	"sync"
 	"time"
 
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/security"
 	"github.com/pingcap/log"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/security"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	gbackoff "google.golang.org/grpc/backoff"

@@ -17,8 +17,8 @@ import (
 	"context"
 	"sync/atomic"
 
+	"github.com/amyangfei/tiflow/cdc/model"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
 	"go.uber.org/zap"
 )
 

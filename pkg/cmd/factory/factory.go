@@ -16,10 +16,10 @@ package factory
 import (
 	"crypto/tls"
 
+	"github.com/amyangfei/tiflow/pkg/cmd/util"
+	"github.com/amyangfei/tiflow/pkg/etcd"
+	"github.com/amyangfei/tiflow/pkg/security"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/pkg/cmd/util"
-	"github.com/pingcap/ticdc/pkg/etcd"
-	"github.com/pingcap/ticdc/pkg/security"
 	"github.com/spf13/cobra"
 	pd "github.com/tikv/pd/client"
 	"google.golang.org/grpc"

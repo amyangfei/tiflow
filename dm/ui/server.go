@@ -19,9 +19,9 @@ import (
 	"io/fs"
 	"net/http"
 
+	"github.com/amyangfei/tiflow/dm/openapi"
+	"github.com/amyangfei/tiflow/dm/pkg/log"
 	"github.com/gin-gonic/gin"
-	"github.com/pingcap/ticdc/dm/openapi"
-	"github.com/pingcap/ticdc/dm/pkg/log"
 	"go.uber.org/zap"
 )
 

@@ -18,9 +18,9 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 func Test(t *testing.T) { check.TestingT(t) }

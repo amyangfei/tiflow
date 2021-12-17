@@ -17,7 +17,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	cerror "github.com/pingcap/ticdc/pkg/errors"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 

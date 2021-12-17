@@ -14,12 +14,12 @@
 package owner
 
 import (
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/config"
+	cdcContext "github.com/amyangfei/tiflow/pkg/context"
+	"github.com/amyangfei/tiflow/pkg/orchestrator"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/config"
-	cdcContext "github.com/pingcap/ticdc/pkg/context"
-	"github.com/pingcap/ticdc/pkg/orchestrator"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 var _ = check.Suite(&feedStateManagerSuite{})

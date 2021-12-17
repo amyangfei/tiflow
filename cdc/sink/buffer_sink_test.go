@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pingcap/ticdc/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/model"
 	"github.com/stretchr/testify/require"
 )
 

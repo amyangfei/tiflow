@@ -26,10 +26,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/redo/common"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/redo/common"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
 	"github.com/pingcap/tidb/br/pkg/storage"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/uber-go/atomic"

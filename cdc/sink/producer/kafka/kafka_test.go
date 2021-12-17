@@ -21,11 +21,11 @@ import (
 	"time"
 
 	"github.com/Shopify/sarama"
+	"github.com/amyangfei/tiflow/cdc/sink/codec"
+	"github.com/amyangfei/tiflow/pkg/kafka"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/cdc/sink/codec"
-	"github.com/pingcap/ticdc/pkg/kafka"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 type kafkaSuite struct{}

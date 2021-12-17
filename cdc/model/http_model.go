@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pingcap/ticdc/pkg/config"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/config"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 )
 
 // JSONTime used to wrap time into json format

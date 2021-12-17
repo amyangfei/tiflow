@@ -19,7 +19,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/pingcap/ticdc/dm/tests/utils"
+	"github.com/amyangfei/tiflow/dm/tests/utils"
 
 	toolutils "github.com/pingcap/tidb-tools/pkg/utils"
 )

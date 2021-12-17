@@ -22,12 +22,12 @@ import (
 	"github.com/pingcap/tidb/parser/ast"
 	"go.uber.org/zap"
 
-	"github.com/pingcap/ticdc/dm/pkg/binlog/event"
-	tcontext "github.com/pingcap/ticdc/dm/pkg/context"
-	parserpkg "github.com/pingcap/ticdc/dm/pkg/parser"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
-	"github.com/pingcap/ticdc/dm/pkg/utils"
-	"github.com/pingcap/ticdc/dm/syncer/metrics"
+	"github.com/amyangfei/tiflow/dm/pkg/binlog/event"
+	tcontext "github.com/amyangfei/tiflow/dm/pkg/context"
+	parserpkg "github.com/amyangfei/tiflow/dm/pkg/parser"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/pkg/utils"
+	"github.com/amyangfei/tiflow/dm/syncer/metrics"
 )
 
 func parseOneStmt(qec *queryEventContext) (stmt ast.StmtNode, err error) {

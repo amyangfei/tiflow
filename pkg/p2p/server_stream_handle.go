@@ -17,9 +17,9 @@ import (
 	"context"
 	"sync"
 
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/proto/p2p"
 	"github.com/pingcap/errors"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/proto/p2p"
 	"go.uber.org/atomic"
 )
 

@@ -16,7 +16,7 @@ package httputil
 import (
 	"testing"
 
-	"github.com/pingcap/ticdc/pkg/leakutil"
+	"github.com/amyangfei/tiflow/pkg/leakutil"
 )
 
 func TestMain(m *testing.M) {

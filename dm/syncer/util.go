@@ -23,10 +23,10 @@ import (
 	"github.com/pingcap/tidb/parser/ast"
 	"go.uber.org/zap"
 
-	"github.com/pingcap/ticdc/dm/pkg/conn"
-	tcontext "github.com/pingcap/ticdc/dm/pkg/context"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
-	"github.com/pingcap/ticdc/dm/relay"
+	"github.com/amyangfei/tiflow/dm/pkg/conn"
+	tcontext "github.com/amyangfei/tiflow/dm/pkg/context"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/relay"
 )
 
 func toBinlogType(relay relay.Process) BinlogType {

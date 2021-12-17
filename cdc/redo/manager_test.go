@@ -18,8 +18,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/config"
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/config"
 	"github.com/stretchr/testify/require"
 )
 

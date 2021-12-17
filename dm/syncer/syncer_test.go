@@ -25,29 +25,29 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pingcap/ticdc/dm/dm/config"
-	"github.com/pingcap/ticdc/dm/dm/pb"
-	"github.com/pingcap/ticdc/dm/pkg/binlog"
-	"github.com/pingcap/ticdc/dm/pkg/binlog/event"
-	"github.com/pingcap/ticdc/dm/pkg/binlog/reader"
-	"github.com/pingcap/ticdc/dm/pkg/conn"
-	tcontext "github.com/pingcap/ticdc/dm/pkg/context"
-	"github.com/pingcap/ticdc/dm/pkg/cputil"
-	"github.com/pingcap/ticdc/dm/pkg/gtid"
-	"github.com/pingcap/ticdc/dm/pkg/log"
-	parserpkg "github.com/pingcap/ticdc/dm/pkg/parser"
-	"github.com/pingcap/ticdc/dm/pkg/retry"
-	"github.com/pingcap/ticdc/dm/pkg/schema"
-	"github.com/pingcap/ticdc/dm/pkg/utils"
-	"github.com/pingcap/ticdc/dm/syncer/dbconn"
+	"github.com/amyangfei/tiflow/dm/dm/config"
+	"github.com/amyangfei/tiflow/dm/dm/pb"
+	"github.com/amyangfei/tiflow/dm/pkg/binlog"
+	"github.com/amyangfei/tiflow/dm/pkg/binlog/event"
+	"github.com/amyangfei/tiflow/dm/pkg/binlog/reader"
+	"github.com/amyangfei/tiflow/dm/pkg/conn"
+	tcontext "github.com/amyangfei/tiflow/dm/pkg/context"
+	"github.com/amyangfei/tiflow/dm/pkg/cputil"
+	"github.com/amyangfei/tiflow/dm/pkg/gtid"
+	"github.com/amyangfei/tiflow/dm/pkg/log"
+	parserpkg "github.com/amyangfei/tiflow/dm/pkg/parser"
+	"github.com/amyangfei/tiflow/dm/pkg/retry"
+	"github.com/amyangfei/tiflow/dm/pkg/schema"
+	"github.com/amyangfei/tiflow/dm/pkg/utils"
+	"github.com/amyangfei/tiflow/dm/syncer/dbconn"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
+	"github.com/amyangfei/tiflow/pkg/errorutil"
 	"github.com/go-mysql-org/go-mysql/mysql"
 	"github.com/go-mysql-org/go-mysql/replication"
 	_ "github.com/go-sql-driver/mysql"
 	. "github.com/pingcap/check"
 	"github.com/pingcap/failpoint"
-	"github.com/pingcap/ticdc/pkg/errorutil"
 	bf "github.com/pingcap/tidb-tools/pkg/binlog-filter"
 	cm "github.com/pingcap/tidb-tools/pkg/column-mapping"
 	"github.com/pingcap/tidb-tools/pkg/filter"
@@ -1128,7 +1128,7 @@ func (s *testSyncerSuite) TestExitSafeModeByConfig(c *C) {
 	checkPointMock.ExpectExec(".*INSERT INTO .* VALUES.* ON DUPLICATE KEY UPDATE.*").WillReturnResult(sqlmock.NewResult(0, 1))
 	checkPointMock.ExpectCommit()
 	// disable 1-minute safe mode
-	c.Assert(failpoint.Enable("github.com/pingcap/ticdc/dm/syncer/SafeModeInitPhaseSeconds", "return(0)"), IsNil)
+	c.Assert(failpoint.Enable("github.com/amyangfei/tiflow/dm/syncer/SafeModeInitPhaseSeconds", "return(0)"), IsNil)
 	go syncer.Process(ctx, resultCh)
 
 	expectJobs := []*expectJob{
@@ -1201,7 +1201,7 @@ func (s *testSyncerSuite) TestExitSafeModeByConfig(c *C) {
 	if err := checkPointMock.ExpectationsWereMet(); err != nil {
 		c.Errorf("checkpointDB unfulfilled expectations: %s", err)
 	}
-	c.Assert(failpoint.Disable("github.com/pingcap/ticdc/dm/syncer/SafeModeInitPhaseSeconds"), IsNil)
+	c.Assert(failpoint.Disable("github.com/amyangfei/tiflow/dm/syncer/SafeModeInitPhaseSeconds"), IsNil)
 }
 
 func (s *testSyncerSuite) TestRemoveMetadataIsFine(c *C) {

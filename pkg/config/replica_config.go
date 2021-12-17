@@ -17,11 +17,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/pingcap/ticdc/pkg/config/outdated"
+	"github.com/amyangfei/tiflow/pkg/config/outdated"
 
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
 	"go.uber.org/zap"
 )
 

@@ -17,9 +17,9 @@ import (
 	"context"
 	"sync"
 
+	"github.com/amyangfei/tiflow/pkg/security"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/pkg/security"
 	"go.uber.org/atomic"
 	"go.uber.org/zap"
 )

@@ -17,10 +17,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/scheduler/util"
+	cdcContext "github.com/amyangfei/tiflow/pkg/context"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/scheduler/util"
-	cdcContext "github.com/pingcap/ticdc/pkg/context"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"

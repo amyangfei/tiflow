@@ -22,7 +22,7 @@ import (
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/integration"
 
-	"github.com/pingcap/ticdc/dm/dm/common"
+	"github.com/amyangfei/tiflow/dm/dm/common"
 )
 
 var (

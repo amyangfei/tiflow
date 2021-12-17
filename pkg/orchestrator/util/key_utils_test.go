@@ -16,8 +16,8 @@ package util
 import (
 	"testing"
 
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 func Test(t *testing.T) { check.TestingT(t) }

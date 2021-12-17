@@ -21,9 +21,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/amyangfei/tiflow/pkg/security"
+	"github.com/amyangfei/tiflow/proto/p2p"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/pkg/security"
-	"github.com/pingcap/ticdc/proto/p2p"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"

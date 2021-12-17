@@ -16,8 +16,8 @@ package scheduler
 import (
 	"testing"
 
-	"github.com/pingcap/ticdc/cdc/model"
-	cdcContext "github.com/pingcap/ticdc/pkg/context"
+	"github.com/amyangfei/tiflow/cdc/model"
+	cdcContext "github.com/amyangfei/tiflow/pkg/context"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )

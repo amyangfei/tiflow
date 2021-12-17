@@ -16,9 +16,9 @@ package kv
 import (
 	"context"
 
+	"github.com/amyangfei/tiflow/pkg/security"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/pkg/security"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 // Use clientSuite for some special reasons, the embed etcd uses zap as the only candidate

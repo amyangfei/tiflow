@@ -21,12 +21,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/config"
+	cerrors "github.com/amyangfei/tiflow/pkg/errors"
+	canal "github.com/amyangfei/tiflow/proto/canal"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/config"
-	cerrors "github.com/pingcap/ticdc/pkg/errors"
-	canal "github.com/pingcap/ticdc/proto/canal"
 	"github.com/pingcap/tidb/parser/types"
 	"go.uber.org/zap"
 )

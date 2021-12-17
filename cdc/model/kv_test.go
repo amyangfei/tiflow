@@ -16,7 +16,7 @@ package model
 import (
 	"testing"
 
-	"github.com/pingcap/ticdc/pkg/regionspan"
+	"github.com/amyangfei/tiflow/pkg/regionspan"
 	"github.com/stretchr/testify/require"
 )
 

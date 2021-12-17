@@ -18,10 +18,10 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

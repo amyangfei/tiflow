@@ -16,13 +16,13 @@ package cli
 import (
 	"encoding/json"
 
+	"github.com/amyangfei/tiflow/cdc"
+	"github.com/amyangfei/tiflow/pkg/cmd/context"
+	"github.com/amyangfei/tiflow/pkg/cmd/factory"
+	"github.com/amyangfei/tiflow/pkg/cmd/util"
+	"github.com/amyangfei/tiflow/pkg/etcd"
+	"github.com/amyangfei/tiflow/pkg/security"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc"
-	"github.com/pingcap/ticdc/pkg/cmd/context"
-	"github.com/pingcap/ticdc/pkg/cmd/factory"
-	"github.com/pingcap/ticdc/pkg/cmd/util"
-	"github.com/pingcap/ticdc/pkg/etcd"
-	"github.com/pingcap/ticdc/pkg/security"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 )

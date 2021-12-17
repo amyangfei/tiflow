@@ -20,23 +20,23 @@ import (
 	"sync"
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/kv"
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/owner"
+	"github.com/amyangfei/tiflow/cdc/processor"
+	"github.com/amyangfei/tiflow/cdc/processor/pipeline/system"
+	ssystem "github.com/amyangfei/tiflow/cdc/sorter/leveldb/system"
+	"github.com/amyangfei/tiflow/pkg/config"
+	cdcContext "github.com/amyangfei/tiflow/pkg/context"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/etcd"
+	"github.com/amyangfei/tiflow/pkg/orchestrator"
+	"github.com/amyangfei/tiflow/pkg/pdtime"
+	"github.com/amyangfei/tiflow/pkg/version"
 	"github.com/google/uuid"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/kv"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/owner"
-	"github.com/pingcap/ticdc/cdc/processor"
-	"github.com/pingcap/ticdc/cdc/processor/pipeline/system"
-	ssystem "github.com/pingcap/ticdc/cdc/sorter/leveldb/system"
-	"github.com/pingcap/ticdc/pkg/config"
-	cdcContext "github.com/pingcap/ticdc/pkg/context"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/etcd"
-	"github.com/pingcap/ticdc/pkg/orchestrator"
-	"github.com/pingcap/ticdc/pkg/pdtime"
-	"github.com/pingcap/ticdc/pkg/version"
 	tidbkv "github.com/pingcap/tidb/kv"
 	"github.com/tikv/client-go/v2/tikv"
 	pd "github.com/tikv/pd/client"
@@ -146,7 +146,7 @@ func (c *Capture) reset(ctx context.Context) error {
 			}
 		}
 		// Sorter dir has been set and checked when server starts.
-		// See https://github.com/pingcap/ticdc/blob/9dad09/cdc/server.go#L275
+		// See https://github.com/amyangfei/tiflow/blob/9dad09/cdc/server.go#L275
 		sortDir := config.GetGlobalServerConfig().Sorter.SortDir
 		c.sorterSystem = ssystem.NewSystem(sortDir, conf.Debug.DB)
 		err = c.sorterSystem.Start(ctx)

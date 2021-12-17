@@ -17,14 +17,14 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/config"
+	"github.com/amyangfei/tiflow/pkg/etcd"
+	"github.com/amyangfei/tiflow/pkg/orchestrator/util"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/config"
-	"github.com/pingcap/ticdc/pkg/etcd"
-	"github.com/pingcap/ticdc/pkg/orchestrator/util"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 type stateSuite struct{}

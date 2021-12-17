@@ -16,9 +16,9 @@ package pipeline
 import (
 	stdContext "context"
 
+	"github.com/amyangfei/tiflow/pkg/context"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/pkg/context"
 	"go.uber.org/zap"
 )
 

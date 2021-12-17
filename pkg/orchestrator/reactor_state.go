@@ -17,12 +17,12 @@ import (
 	"encoding/json"
 	"reflect"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	cerrors "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/etcd"
+	"github.com/amyangfei/tiflow/pkg/orchestrator/util"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	cerrors "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/etcd"
-	"github.com/pingcap/ticdc/pkg/orchestrator/util"
 	"go.uber.org/zap"
 )
 

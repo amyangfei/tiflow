@@ -16,11 +16,11 @@ package owner
 import (
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	cerrors "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/orchestrator"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	cerrors "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/orchestrator"
 	"go.uber.org/zap"
 )
 

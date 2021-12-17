@@ -24,13 +24,13 @@ import (
 	"time"
 
 	"github.com/Shopify/sarama"
+	"github.com/amyangfei/tiflow/cdc/sink/codec"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/kafka"
+	"github.com/amyangfei/tiflow/pkg/notify"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/sink/codec"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/kafka"
-	"github.com/pingcap/ticdc/pkg/notify"
 	"go.uber.org/zap"
 )
 

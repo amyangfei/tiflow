@@ -21,11 +21,11 @@ import (
 	"sync/atomic"
 	"testing"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/cdc/model"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 type mockEntrySorterSuite struct{}

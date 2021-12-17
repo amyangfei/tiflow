@@ -17,11 +17,11 @@ import (
 	"flag"
 	"os"
 
+	"github.com/amyangfei/tiflow/tests/integration_tests/dailytest"
+	"github.com/amyangfei/tiflow/tests/integration_tests/util"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/tests/integration_tests/dailytest"
-	"github.com/pingcap/ticdc/tests/integration_tests/util"
 )
 
 func main() {

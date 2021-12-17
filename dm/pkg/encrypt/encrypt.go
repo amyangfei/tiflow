@@ -20,7 +20,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 
-	"github.com/pingcap/ticdc/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
 )
 
 var (

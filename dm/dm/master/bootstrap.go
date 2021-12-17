@@ -25,17 +25,17 @@ import (
 	"github.com/pingcap/errors"
 	"go.uber.org/zap"
 
-	"github.com/pingcap/ticdc/dm/dm/config"
-	"github.com/pingcap/ticdc/dm/dm/master/scheduler"
-	"github.com/pingcap/ticdc/dm/dm/master/workerrpc"
-	"github.com/pingcap/ticdc/dm/dm/pb"
-	"github.com/pingcap/ticdc/dm/pkg/conn"
-	tcontext "github.com/pingcap/ticdc/dm/pkg/context"
-	"github.com/pingcap/ticdc/dm/pkg/log"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
-	"github.com/pingcap/ticdc/dm/pkg/upgrade"
-	"github.com/pingcap/ticdc/dm/pkg/v1dbschema"
-	"github.com/pingcap/ticdc/dm/pkg/v1workermeta"
+	"github.com/amyangfei/tiflow/dm/dm/config"
+	"github.com/amyangfei/tiflow/dm/dm/master/scheduler"
+	"github.com/amyangfei/tiflow/dm/dm/master/workerrpc"
+	"github.com/amyangfei/tiflow/dm/dm/pb"
+	"github.com/amyangfei/tiflow/dm/pkg/conn"
+	tcontext "github.com/amyangfei/tiflow/dm/pkg/context"
+	"github.com/amyangfei/tiflow/dm/pkg/log"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/pkg/upgrade"
+	"github.com/amyangfei/tiflow/dm/pkg/v1dbschema"
+	"github.com/amyangfei/tiflow/dm/pkg/v1workermeta"
 )
 
 var (

@@ -18,11 +18,11 @@ import (
 	"compress/zlib"
 	"testing"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/sink/codec/craft"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
+	"github.com/amyangfei/tiflow/proto/benchmark"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/sink/codec/craft"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
-	"github.com/pingcap/ticdc/proto/benchmark"
 	"github.com/pingcap/tidb/parser/mysql"
 )
 

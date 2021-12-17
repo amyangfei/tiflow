@@ -21,7 +21,7 @@ import (
 	"github.com/pingcap/check"
 	"github.com/pingcap/errors"
 
-	"github.com/pingcap/ticdc/dm/pkg/binlog/reader"
+	"github.com/amyangfei/tiflow/dm/pkg/binlog/reader"
 )
 
 var _ = check.Suite(&testRemoteReaderSuite{})

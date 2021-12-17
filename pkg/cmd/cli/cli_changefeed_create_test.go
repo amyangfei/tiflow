@@ -19,9 +19,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/amyangfei/tiflow/pkg/config"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
-	"github.com/pingcap/ticdc/pkg/config"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 	"github.com/spf13/cobra"
 )
 

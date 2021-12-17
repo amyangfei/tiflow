@@ -17,7 +17,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/pingcap/ticdc/pkg/p2p"
+	"github.com/amyangfei/tiflow/pkg/p2p"
 	"github.com/stretchr/testify/require"
 )
 

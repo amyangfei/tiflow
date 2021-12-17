@@ -21,16 +21,16 @@ import (
 	"strings"
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/capture"
+	"github.com/amyangfei/tiflow/cdc/model"
 	"github.com/gin-gonic/gin"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/capture"
-	"github.com/pingcap/ticdc/cdc/model"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
 
 	// use for OpenAPI online docs
-	_ "github.com/pingcap/ticdc/api"
+	_ "github.com/amyangfei/tiflow/api"
 )
 
 // newRouter create a router for OpenAPI

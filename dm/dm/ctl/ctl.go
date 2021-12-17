@@ -19,10 +19,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/pingcap/ticdc/dm/dm/ctl/common"
-	"github.com/pingcap/ticdc/dm/dm/ctl/master"
-	"github.com/pingcap/ticdc/dm/pkg/log"
-	"github.com/pingcap/ticdc/dm/pkg/utils"
+	"github.com/amyangfei/tiflow/dm/dm/ctl/common"
+	"github.com/amyangfei/tiflow/dm/dm/ctl/master"
+	"github.com/amyangfei/tiflow/dm/pkg/log"
+	"github.com/amyangfei/tiflow/dm/pkg/utils"
 
 	"github.com/chzyer/readline"
 	"github.com/pingcap/errors"

@@ -19,12 +19,12 @@ import (
 	"fmt"
 	"strings"
 
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/quotes"
+	"github.com/amyangfei/tiflow/pkg/security"
 	"github.com/go-sql-driver/mysql"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/quotes"
-	"github.com/pingcap/ticdc/pkg/security"
 	"go.uber.org/zap"
 )
 

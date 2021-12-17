@@ -18,7 +18,7 @@ import (
 	"strings"
 	"time"
 
-	cerror "github.com/pingcap/ticdc/pkg/errors"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/tidb/util/timeutil"
 )
 

@@ -22,13 +22,13 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/sorter"
+	"github.com/amyangfei/tiflow/pkg/config"
+	"github.com/amyangfei/tiflow/pkg/retry"
 	"github.com/cockroachdb/pebble"
 	"github.com/cockroachdb/pebble/bloom"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/sorter"
-	"github.com/pingcap/ticdc/pkg/config"
-	"github.com/pingcap/ticdc/pkg/retry"
 	"go.uber.org/zap"
 )
 

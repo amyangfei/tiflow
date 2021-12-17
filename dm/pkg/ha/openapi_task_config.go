@@ -19,10 +19,10 @@ import (
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/clientv3/clientv3util"
 
-	"github.com/pingcap/ticdc/dm/dm/common"
-	"github.com/pingcap/ticdc/dm/openapi"
-	"github.com/pingcap/ticdc/dm/pkg/etcdutil"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/dm/common"
+	"github.com/amyangfei/tiflow/dm/openapi"
+	"github.com/amyangfei/tiflow/dm/pkg/etcdutil"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
 )
 
 func openAPITaskFromResp(resp *clientv3.GetResponse) (*openapi.Task, error) {

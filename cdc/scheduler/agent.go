@@ -17,13 +17,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/scheduler/util"
+	"github.com/amyangfei/tiflow/pkg/context"
+	cerrors "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/edwingeng/deque"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/scheduler/util"
-	"github.com/pingcap/ticdc/pkg/context"
-	cerrors "github.com/pingcap/ticdc/pkg/errors"
 	"github.com/uber-go/atomic"
 	"go.uber.org/zap"
 )

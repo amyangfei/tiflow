@@ -19,14 +19,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	pscheduler "github.com/amyangfei/tiflow/cdc/scheduler"
+	cdcContext "github.com/amyangfei/tiflow/pkg/context"
+	"github.com/amyangfei/tiflow/pkg/orchestrator"
+	"github.com/amyangfei/tiflow/pkg/p2p"
+	"github.com/amyangfei/tiflow/pkg/version"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	pscheduler "github.com/pingcap/ticdc/cdc/scheduler"
-	cdcContext "github.com/pingcap/ticdc/pkg/context"
-	"github.com/pingcap/ticdc/pkg/orchestrator"
-	"github.com/pingcap/ticdc/pkg/p2p"
-	"github.com/pingcap/ticdc/pkg/version"
 	"github.com/stretchr/testify/require"
 )
 
@@ -35,9 +35,9 @@ const (
 )
 
 func TestSchedulerBasics(t *testing.T) {
-	_ = failpoint.Enable("github.com/pingcap/ticdc/pkg/p2p/ClientInjectSendMessageTryAgain", "50%return(true)")
+	_ = failpoint.Enable("github.com/amyangfei/tiflow/pkg/p2p/ClientInjectSendMessageTryAgain", "50%return(true)")
 	defer func() {
-		_ = failpoint.Disable("github.com/pingcap/ticdc/pkg/p2p/ClientInjectSendMessageTryAgain")
+		_ = failpoint.Disable("github.com/amyangfei/tiflow/pkg/p2p/ClientInjectSendMessageTryAgain")
 	}()
 
 	stdCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

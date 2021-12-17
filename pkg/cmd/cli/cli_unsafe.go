@@ -17,8 +17,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/amyangfei/tiflow/pkg/cmd/factory"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/pkg/cmd/factory"
 	"github.com/spf13/cobra"
 )
 

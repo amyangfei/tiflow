@@ -14,10 +14,10 @@
 package cli
 
 import (
-	"github.com/pingcap/ticdc/pkg/cmd/context"
-	"github.com/pingcap/ticdc/pkg/cmd/factory"
-	"github.com/pingcap/ticdc/pkg/cmd/util"
-	"github.com/pingcap/ticdc/pkg/etcd"
+	"github.com/amyangfei/tiflow/pkg/cmd/context"
+	"github.com/amyangfei/tiflow/pkg/cmd/factory"
+	"github.com/amyangfei/tiflow/pkg/cmd/util"
+	"github.com/amyangfei/tiflow/pkg/etcd"
 	"github.com/spf13/cobra"
 )
 

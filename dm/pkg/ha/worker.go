@@ -19,8 +19,8 @@ import (
 
 	"go.etcd.io/etcd/clientv3"
 
-	"github.com/pingcap/ticdc/dm/dm/common"
-	"github.com/pingcap/ticdc/dm/pkg/etcdutil"
+	"github.com/amyangfei/tiflow/dm/dm/common"
+	"github.com/amyangfei/tiflow/dm/pkg/etcdutil"
 )
 
 // WorkerInfo represents the node information of the DM-worker.

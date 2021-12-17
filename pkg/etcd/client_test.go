@@ -17,10 +17,10 @@ import (
 	"context"
 	"time"
 
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/benbjohnson/clock"
 	"github.com/pingcap/check"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 	"go.etcd.io/etcd/clientv3"
 )
 

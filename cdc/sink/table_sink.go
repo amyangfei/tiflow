@@ -18,9 +18,9 @@ import (
 	"sort"
 	"sync/atomic"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/redo"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/redo"
 )
 
 type tableSink struct {

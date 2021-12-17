@@ -28,10 +28,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/amyangfei/tiflow/tests/integration_tests/util"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/kvproto/pkg/kvrpcpb"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/tests/integration_tests/util"
 	"github.com/pingcap/tidb/kv"
 	"github.com/pingcap/tidb/parser/model"
 	"github.com/pingcap/tidb/store/driver"

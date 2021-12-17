@@ -14,12 +14,12 @@
 package cli
 
 import (
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/cmd/context"
-	"github.com/pingcap/ticdc/pkg/cmd/factory"
-	"github.com/pingcap/ticdc/pkg/cmd/util"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/etcd"
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/cmd/context"
+	"github.com/amyangfei/tiflow/pkg/cmd/factory"
+	"github.com/amyangfei/tiflow/pkg/cmd/util"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/etcd"
 	"github.com/spf13/cobra"
 )
 

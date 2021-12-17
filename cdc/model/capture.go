@@ -16,8 +16,8 @@ package model
 import (
 	"encoding/json"
 
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/errors"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
 )
 
 // CaptureInfo store in etcd.

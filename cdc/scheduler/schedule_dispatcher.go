@@ -17,11 +17,11 @@ import (
 	"math"
 	"sync"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/scheduler/util"
+	"github.com/amyangfei/tiflow/pkg/context"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/scheduler/util"
-	"github.com/pingcap/ticdc/pkg/context"
 	"go.uber.org/zap"
 )
 

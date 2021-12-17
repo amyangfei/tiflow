@@ -17,9 +17,9 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/filter"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/filter"
 	"go.uber.org/zap"
 )
 

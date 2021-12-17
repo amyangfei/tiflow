@@ -19,8 +19,8 @@ import (
 	"sort"
 	"strings"
 
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/errors"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
 )
 
 // URLs defines a slice of URLs as a type

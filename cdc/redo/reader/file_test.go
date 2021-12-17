@@ -23,10 +23,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/redo/common"
-	"github.com/pingcap/ticdc/cdc/redo/writer"
-	"github.com/pingcap/ticdc/pkg/leakutil"
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/redo/common"
+	"github.com/amyangfei/tiflow/cdc/redo/writer"
+	"github.com/amyangfei/tiflow/pkg/leakutil"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/net/context"
 )

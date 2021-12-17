@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pingcap/ticdc/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 

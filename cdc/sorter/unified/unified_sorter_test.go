@@ -17,8 +17,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/pingcap/ticdc/cdc/model"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
+	"github.com/amyangfei/tiflow/cdc/model"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 

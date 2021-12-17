@@ -20,9 +20,9 @@ import (
 	. "github.com/pingcap/check"
 	"github.com/syndtr/goleveldb/leveldb"
 
-	"github.com/pingcap/ticdc/dm/dm/config"
-	"github.com/pingcap/ticdc/dm/dm/pb"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/dm/config"
+	"github.com/amyangfei/tiflow/dm/dm/pb"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
 )
 
 func TestSuite(t *testing.T) {

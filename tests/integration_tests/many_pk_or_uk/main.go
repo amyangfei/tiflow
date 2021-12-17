@@ -21,9 +21,9 @@ import (
 	"os"
 	"sync"
 
+	"github.com/amyangfei/tiflow/tests/integration_tests/util"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/tests/integration_tests/util"
 )
 
 func main() {

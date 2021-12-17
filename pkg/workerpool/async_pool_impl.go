@@ -18,9 +18,9 @@ import (
 	"sync"
 	"sync/atomic"
 
+	cerrors "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/retry"
 	"github.com/pingcap/errors"
-	cerrors "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/retry"
 	"golang.org/x/sync/errgroup"
 )
 

@@ -18,8 +18,8 @@ import (
 	"os"
 	"path/filepath"
 
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/errors"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
 )
 
 const (

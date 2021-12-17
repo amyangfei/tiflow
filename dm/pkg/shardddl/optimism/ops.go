@@ -16,9 +16,9 @@ package optimism
 import (
 	"go.etcd.io/etcd/clientv3"
 
-	"github.com/pingcap/ticdc/dm/dm/common"
-	"github.com/pingcap/ticdc/dm/pkg/etcdutil"
-	"github.com/pingcap/ticdc/dm/pkg/utils"
+	"github.com/amyangfei/tiflow/dm/dm/common"
+	"github.com/amyangfei/tiflow/dm/pkg/etcdutil"
+	"github.com/amyangfei/tiflow/dm/pkg/utils"
 )
 
 // PutSourceTablesInfo puts source tables and a shard DDL info.

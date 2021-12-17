@@ -14,8 +14,8 @@
 package scheduler
 
 import (
+	"github.com/amyangfei/tiflow/cdc/model"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
 )
 
 // Scheduler is an abstraction for anything that provide the schedule table feature

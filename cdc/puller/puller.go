@@ -18,14 +18,14 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/amyangfei/tiflow/cdc/kv"
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/puller/frontier"
+	"github.com/amyangfei/tiflow/pkg/regionspan"
+	"github.com/amyangfei/tiflow/pkg/txnutil"
+	"github.com/amyangfei/tiflow/pkg/util"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/kv"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/puller/frontier"
-	"github.com/pingcap/ticdc/pkg/regionspan"
-	"github.com/pingcap/ticdc/pkg/txnutil"
-	"github.com/pingcap/ticdc/pkg/util"
 	tidbkv "github.com/pingcap/tidb/kv"
 	"github.com/tikv/client-go/v2/oracle"
 	"github.com/tikv/client-go/v2/tikv"
@@ -152,7 +152,7 @@ func (p *pullerImpl) Run(ctx context.Context) error {
 	lastResolvedTs := p.checkpointTs
 	g.Go(func() error {
 		output := func(raw *model.RawKVEntry) error {
-			// even after https://github.com/pingcap/ticdc/pull/2038, kv client
+			// even after https://github.com/amyangfei/tiflow/pull/2038, kv client
 			// could still miss region change notification, which leads to resolved
 			// ts update missing in puller, however resolved ts fallback here can
 			// be ignored since no late data is received and the guarantee of

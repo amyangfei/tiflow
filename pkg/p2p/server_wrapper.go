@@ -17,10 +17,10 @@ import (
 	"context"
 	"sync"
 
+	"github.com/amyangfei/tiflow/proto/p2p"
 	"github.com/modern-go/reflect2"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/proto/p2p"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	gRPCPeer "google.golang.org/grpc/peer"

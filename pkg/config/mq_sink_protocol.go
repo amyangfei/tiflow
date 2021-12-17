@@ -16,7 +16,7 @@ package config
 import (
 	"strings"
 
-	cerror "github.com/pingcap/ticdc/pkg/errors"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 )
 
 // Protocol is the protocol of the mq message.

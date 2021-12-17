@@ -14,14 +14,14 @@
 package owner
 
 import (
+	"github.com/amyangfei/tiflow/cdc/entry"
+	"github.com/amyangfei/tiflow/cdc/kv"
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/config"
+	"github.com/amyangfei/tiflow/pkg/cyclic/mark"
+	"github.com/amyangfei/tiflow/pkg/filter"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/entry"
-	"github.com/pingcap/ticdc/cdc/kv"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/config"
-	"github.com/pingcap/ticdc/pkg/cyclic/mark"
-	"github.com/pingcap/ticdc/pkg/filter"
 	tidbkv "github.com/pingcap/tidb/kv"
 	timeta "github.com/pingcap/tidb/meta"
 	timodel "github.com/pingcap/tidb/parser/model"

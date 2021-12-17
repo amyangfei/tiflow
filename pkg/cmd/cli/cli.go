@@ -18,11 +18,11 @@ import (
 	"io"
 	"os"
 
+	"github.com/amyangfei/tiflow/pkg/cmd/factory"
+	"github.com/amyangfei/tiflow/pkg/cmd/util"
+	"github.com/amyangfei/tiflow/pkg/logutil"
 	"github.com/chzyer/readline"
 	"github.com/mattn/go-shellwords"
-	"github.com/pingcap/ticdc/pkg/cmd/factory"
-	"github.com/pingcap/ticdc/pkg/cmd/util"
-	"github.com/pingcap/ticdc/pkg/logutil"
 	"github.com/spf13/cobra"
 )
 

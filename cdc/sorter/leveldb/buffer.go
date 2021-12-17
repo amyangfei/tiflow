@@ -14,9 +14,9 @@
 package leveldb
 
 import (
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/sorter/leveldb/message"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/sorter/leveldb/message"
 	"go.uber.org/zap"
 )
 

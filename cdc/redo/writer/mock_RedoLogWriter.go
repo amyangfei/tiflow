@@ -18,7 +18,7 @@ package writer
 import (
 	context "context"
 
-	model "github.com/pingcap/ticdc/cdc/model"
+	model "github.com/amyangfei/tiflow/cdc/model"
 	mock "github.com/stretchr/testify/mock"
 )
 

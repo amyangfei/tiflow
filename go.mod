@@ -1,4 +1,4 @@
-module github.com/pingcap/ticdc
+module github.com/amyangfei/tiflow
 
 go 1.16
 

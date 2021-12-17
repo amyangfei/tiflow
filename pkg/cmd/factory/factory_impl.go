@@ -18,11 +18,11 @@ import (
 	"strings"
 	"time"
 
+	cmdconetxt "github.com/amyangfei/tiflow/pkg/cmd/context"
+	"github.com/amyangfei/tiflow/pkg/etcd"
+	"github.com/amyangfei/tiflow/pkg/security"
+	"github.com/amyangfei/tiflow/pkg/version"
 	"github.com/pingcap/errors"
-	cmdconetxt "github.com/pingcap/ticdc/pkg/cmd/context"
-	"github.com/pingcap/ticdc/pkg/etcd"
-	"github.com/pingcap/ticdc/pkg/security"
-	"github.com/pingcap/ticdc/pkg/version"
 	pd "github.com/tikv/pd/client"
 	"go.etcd.io/etcd/clientv3"
 	etcdlogutil "go.etcd.io/etcd/pkg/logutil"
@@ -102,7 +102,7 @@ func (f *factoryImpl) EtcdClient() (*etcd.CDCEtcdClient, error) {
 		LogConfig:   &logConfig,
 		DialTimeout: 30 * time.Second,
 		// TODO(hi-rustin): add gRPC metrics to Options.
-		// See also: https://github.com/pingcap/ticdc/pull/2341#discussion_r673018537.
+		// See also: https://github.com/amyangfei/tiflow/pull/2341#discussion_r673018537.
 		DialOptions: []grpc.DialOption{
 			grpcTLSOption,
 			grpc.WithBlock(),
@@ -141,7 +141,7 @@ func (f factoryImpl) PdClient() (pd.Client, error) {
 	pdClient, err := pd.NewClientWithContext(
 		ctx, pdEndpoints, credential.PDSecurityOption(),
 		// TODO(hi-rustin): add gRPC metrics to Options.
-		// See also: https://github.com/pingcap/ticdc/pull/2341#discussion_r673032407.
+		// See also: https://github.com/amyangfei/tiflow/pull/2341#discussion_r673032407.
 		pd.WithGRPCDialOptions(
 			grpcTLSOption,
 			grpc.WithBlock(),

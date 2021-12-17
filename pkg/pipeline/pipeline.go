@@ -17,10 +17,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/amyangfei/tiflow/pkg/context"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/pkg/context"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
 	"go.uber.org/zap"
 )
 

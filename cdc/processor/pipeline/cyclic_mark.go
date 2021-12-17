@@ -14,12 +14,12 @@
 package pipeline
 
 import (
+	"github.com/amyangfei/tiflow/cdc/entry"
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/cyclic/mark"
+	"github.com/amyangfei/tiflow/pkg/pipeline"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/entry"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/cyclic/mark"
-	"github.com/pingcap/ticdc/pkg/pipeline"
 	"go.uber.org/zap"
 )
 

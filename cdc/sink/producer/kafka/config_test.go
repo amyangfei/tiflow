@@ -19,13 +19,13 @@ import (
 	"net/url"
 
 	"github.com/Shopify/sarama"
+	"github.com/amyangfei/tiflow/pkg/config"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/security"
+	"github.com/amyangfei/tiflow/pkg/util"
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/pkg/config"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/security"
-	"github.com/pingcap/ticdc/pkg/util"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 func (s *kafkaSuite) TestNewSaramaConfig(c *check.C) {

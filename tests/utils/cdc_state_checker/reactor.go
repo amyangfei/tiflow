@@ -16,10 +16,10 @@ package main
 import (
 	"context"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/orchestrator"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/orchestrator"
 	"go.uber.org/zap"
 )
 

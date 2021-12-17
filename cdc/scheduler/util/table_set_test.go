@@ -16,7 +16,7 @@ package util
 import (
 	"testing"
 
-	"github.com/pingcap/ticdc/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/model"
 	"github.com/stretchr/testify/require"
 )
 

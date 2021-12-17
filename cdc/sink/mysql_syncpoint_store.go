@@ -20,13 +20,13 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/amyangfei/tiflow/pkg/cyclic/mark"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/security"
+	"github.com/amyangfei/tiflow/pkg/util"
 	dmysql "github.com/go-sql-driver/mysql"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/pkg/cyclic/mark"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/security"
-	"github.com/pingcap/ticdc/pkg/util"
 	"go.uber.org/zap"
 )
 

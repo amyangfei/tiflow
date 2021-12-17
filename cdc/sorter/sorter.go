@@ -16,7 +16,7 @@ package sorter
 import (
 	"context"
 
-	"github.com/pingcap/ticdc/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/model"
 )
 
 // EventSorter accepts unsorted PolymorphicEvents, sort them in background and returns

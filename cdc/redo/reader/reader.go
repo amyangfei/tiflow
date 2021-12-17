@@ -23,10 +23,10 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/redo/common"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/redo/common"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
 	"go.uber.org/multierr"
 )
 

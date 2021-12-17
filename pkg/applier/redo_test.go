@@ -20,11 +20,11 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/redo"
+	"github.com/amyangfei/tiflow/cdc/redo/reader"
+	"github.com/amyangfei/tiflow/cdc/sink"
 	"github.com/phayes/freeport"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/redo"
-	"github.com/pingcap/ticdc/cdc/redo/reader"
-	"github.com/pingcap/ticdc/cdc/sink"
 	"github.com/stretchr/testify/require"
 )
 

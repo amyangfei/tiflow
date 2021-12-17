@@ -24,12 +24,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pingcap/ticdc/pkg/etcd"
+	"github.com/amyangfei/tiflow/pkg/etcd"
 
+	cerrors "github.com/amyangfei/tiflow/pkg/errors"
+	"github.com/amyangfei/tiflow/pkg/retry"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
-	cerrors "github.com/pingcap/ticdc/pkg/errors"
-	"github.com/pingcap/ticdc/pkg/retry"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/pkg/logutil"
 	"go.uber.org/zap"

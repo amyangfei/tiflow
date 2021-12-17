@@ -18,8 +18,8 @@ import (
 	"testing"
 	"time"
 
-	tcontext "github.com/pingcap/ticdc/dm/pkg/context"
-	"github.com/pingcap/ticdc/dm/pkg/terror"
+	tcontext "github.com/amyangfei/tiflow/dm/pkg/context"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
 
 	. "github.com/pingcap/check"
 	"github.com/pingcap/tidb-tools/pkg/dbutil"

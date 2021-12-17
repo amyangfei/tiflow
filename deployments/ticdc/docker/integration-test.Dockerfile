@@ -49,7 +49,7 @@ ENV GOPATH /go
 ENV GOROOT /usr/local/go
 ENV PATH $GOPATH/bin:$GOROOT/bin:$PATH
 
-WORKDIR /go/src/github.com/pingcap/ticdc
+WORKDIR /go/src/github.com/amyangfei/tiflow
 COPY . .
 
 # Clean bin dir and build TiCDC.

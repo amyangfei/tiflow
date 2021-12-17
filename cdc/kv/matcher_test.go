@@ -14,9 +14,9 @@
 package kv
 
 import (
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
 	"github.com/pingcap/kvproto/pkg/cdcpb"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 )
 
 type matcherSuite struct{}

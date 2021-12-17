@@ -23,9 +23,9 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/amyangfei/tiflow/pkg/actor/message"
+	cerrors "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/pkg/actor/message"
-	cerrors "github.com/pingcap/ticdc/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"

@@ -21,7 +21,7 @@ import (
 	"github.com/pingcap/tidb/parser/types"
 	"github.com/pingcap/tidb/util/mock"
 
-	"github.com/pingcap/ticdc/dm/pkg/binlog"
+	"github.com/amyangfei/tiflow/dm/pkg/binlog"
 )
 
 var _ = Suite(&testJobSuite{})

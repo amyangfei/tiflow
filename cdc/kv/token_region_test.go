@@ -19,9 +19,9 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/amyangfei/tiflow/pkg/util/testleak"
 	"github.com/pingcap/check"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/ticdc/pkg/util/testleak"
 	"github.com/tikv/client-go/v2/tikv"
 	"golang.org/x/sync/errgroup"
 )

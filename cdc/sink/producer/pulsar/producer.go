@@ -18,11 +18,11 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/amyangfei/tiflow/cdc/sink/codec"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/apache/pulsar-client-go/pulsar"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/sink/codec"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
 	"go.uber.org/zap"
 )
 

@@ -17,7 +17,7 @@ import (
 	capturer "github.com/kami-zh/go-capturer"
 	. "github.com/pingcap/check"
 
-	"github.com/pingcap/ticdc/dm/pkg/log"
+	"github.com/amyangfei/tiflow/dm/pkg/log"
 )
 
 var _ = Suite(&testPrinterSuite{})

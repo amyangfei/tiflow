@@ -21,7 +21,7 @@ import (
 
 	"golang.org/x/sys/unix"
 
-	"github.com/pingcap/ticdc/dm/pkg/terror"
+	"github.com/amyangfei/tiflow/dm/pkg/terror"
 )
 
 // GetStorageSize gets storage's capacity and available size.

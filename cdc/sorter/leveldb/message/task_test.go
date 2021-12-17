@@ -16,8 +16,8 @@ package message
 import (
 	"testing"
 
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/cdc/sorter/encoding"
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/cdc/sorter/encoding"
 	"github.com/stretchr/testify/require"
 )
 

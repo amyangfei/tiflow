@@ -23,12 +23,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/amyangfei/tiflow/pkg/httputil"
+	"github.com/amyangfei/tiflow/pkg/security"
 	grpcTesting "github.com/grpc-ecosystem/go-grpc-middleware/testing"
 	grpcTestingProto "github.com/grpc-ecosystem/go-grpc-middleware/testing/testproto"
 	"github.com/integralist/go-findroot/find"
 	"github.com/phayes/freeport"
-	"github.com/pingcap/ticdc/pkg/httputil"
-	"github.com/pingcap/ticdc/pkg/security"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 )

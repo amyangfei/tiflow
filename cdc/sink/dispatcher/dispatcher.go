@@ -16,10 +16,10 @@ package dispatcher
 import (
 	"strings"
 
+	"github.com/amyangfei/tiflow/cdc/model"
+	"github.com/amyangfei/tiflow/pkg/config"
+	cerror "github.com/amyangfei/tiflow/pkg/errors"
 	"github.com/pingcap/log"
-	"github.com/pingcap/ticdc/cdc/model"
-	"github.com/pingcap/ticdc/pkg/config"
-	cerror "github.com/pingcap/ticdc/pkg/errors"
 	filter "github.com/pingcap/tidb-tools/pkg/table-filter"
 	"go.uber.org/zap"
 )

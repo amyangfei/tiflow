@@ -14,7 +14,7 @@
 package main
 
 import (
-	"github.com/pingcap/ticdc/pkg/cmd"
+	"github.com/amyangfei/tiflow/pkg/cmd"
 	_ "github.com/pingcap/tidb/types/parser_driver"
 )
 

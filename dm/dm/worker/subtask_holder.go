@@ -17,7 +17,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/pingcap/ticdc/dm/relay"
+	"github.com/amyangfei/tiflow/dm/relay"
 )
 
 // subTaskHolder holds subtask instances.
