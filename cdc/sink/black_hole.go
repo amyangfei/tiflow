@@ -19,17 +19,24 @@ import (
 
 	"github.com/pingcap/log"
 	"github.com/pingcap/ticdc/cdc/model"
+	"github.com/pingcap/ticdc/cdc/sink/codec"
 	"go.uber.org/zap"
 )
 
 // newBlackHoleSink creates a block hole sink
 func newBlackHoleSink(ctx context.Context, opts map[string]string) *blackHoleSink {
+
+	newEncoder := codec.NewEventBatchEncoder(codec.ProtocolCanalJSON)
+	encoder := newEncoder()
+
 	return &blackHoleSink{
+		encoder:    encoder,
 		statistics: NewStatistics(ctx, "blackhole", opts),
 	}
 }
 
 type blackHoleSink struct {
+	encoder         codec.EventBatchEncoder
 	statistics      *Statistics
 	checkpointTs    uint64
 	accumulated     uint64
@@ -38,7 +45,11 @@ type blackHoleSink struct {
 
 func (b *blackHoleSink) EmitRowChangedEvents(ctx context.Context, rows ...*model.RowChangedEvent) error {
 	for _, row := range rows {
-		log.Debug("BlockHoleSink: EmitRowChangedEvents", zap.Any("row", row))
+		b.encoder.AppendRowChangedEvent(row)
+		log.Info("BlockHoleSink: EmitRowChangedEvents", zap.Any("row", row))
+	}
+	for _, message := range b.encoder.Build() {
+		log.Info("BlackHoleSink: message", zap.Any("message", message))
 	}
 	rowsCount := len(rows)
 	atomic.AddUint64(&b.accumulated, uint64(rowsCount))
