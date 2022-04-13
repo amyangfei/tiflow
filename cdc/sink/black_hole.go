@@ -19,18 +19,31 @@ import (
 
 	"github.com/pingcap/log"
 	"github.com/pingcap/tiflow/cdc/model"
+	"github.com/pingcap/tiflow/cdc/sink/codec"
+	"github.com/pingcap/tiflow/pkg/config"
+	"github.com/pingcap/tiflow/pkg/util"
 	"go.uber.org/zap"
 )
 
 // newBlackHoleSink creates a black hole sink
 func newBlackHoleSink(ctx context.Context) *blackHoleSink {
+	protocol := config.ProtocolCanalJSON
+	encoderConfig := codec.NewConfig(protocol, util.TimezoneFromCtx(ctx))
+	encoderBuilder, err := codec.NewEventBatchEncoderBuilder(encoderConfig, nil)
+	if err != nil {
+		log.Panic("create encoder", zap.Error(err))
+	}
+	encoder := encoderBuilder.Build()
+
 	return &blackHoleSink{
+		encoder: encoder,
 		// use `sinkTypeDB` to record metrics
 		statistics: NewStatistics(ctx, sinkTypeDB),
 	}
 }
 
 type blackHoleSink struct {
+	encoder         codec.EventBatchEncoder
 	statistics      *Statistics
 	accumulated     uint64
 	lastAccumulated uint64
@@ -47,6 +60,10 @@ func (b *blackHoleSink) TryEmitRowChangedEvents(ctx context.Context, rows ...*mo
 func (b *blackHoleSink) EmitRowChangedEvents(ctx context.Context, rows ...*model.RowChangedEvent) error {
 	for _, row := range rows {
 		log.Debug("BlockHoleSink: EmitRowChangedEvents", zap.Any("row", row))
+		b.encoder.AppendRowChangedEvent(row)
+	}
+	for _, message := range b.encoder.Build() {
+		log.Info("mq message", zap.Any("message", message))
 	}
 	rowsCount := len(rows)
 	atomic.AddUint64(&b.accumulated, uint64(rowsCount))
