@@ -30,4 +30,5 @@ jobs:
           url: ${{ secrets.ENGINE_FEISHU_NOTIFY_URL }}
           msg_type: text
           content: |
-            dataflow engine chaos job runs, see https://github.com/pingcap/tiflow/actions/runs/${{ github.run_id }}
+            text: |
+              "dataflow engine chaos job runs, see https://github.com/pingcap/tiflow/actions/runs/${{ github.run_id }}"
