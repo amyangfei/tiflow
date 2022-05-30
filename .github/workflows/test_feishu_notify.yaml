@@ -1,0 +1,32 @@
+name: Test feishu notification
+
+on:
+  push:
+    branches: [ engine-chaos-test-2 ]
+
+# See: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#concurrency.
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "base"
+  base:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-18.04
+    timeout-minutes: 30
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+
+      # Debug code
+      - name: Feishu notification
+        continue-on-error: true
+        uses: foxundermoon/feishu-action@v2
+        if: ${{ always() }}
+        with:
+          url: ${{ secrets.ENGINE_FEISHU_NOTIFY_URL }}
+          msg_type: text
+          content: "dataflow engine chaos job runs, see https://github.com/pingcap/tiflow/actions/runs/{{ GITHUB_RUN_ID }}"
