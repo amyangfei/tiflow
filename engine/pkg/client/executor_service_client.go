@@ -17,7 +17,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/pingcap/tiflow/dm/pkg/log"
+	"github.com/pingcap/log"
 	pb "github.com/pingcap/tiflow/engine/enginepb"
 	"github.com/pingcap/tiflow/engine/pkg/client/internal"
 	"github.com/pingcap/tiflow/engine/pkg/rpcerror"
@@ -95,6 +95,13 @@ func (c *executorServiceClient) DispatchTask(
 
 	_, err := internal.NewCall(c.cli.PreDispatchTask, predispatchReq).Do(ctx)
 	if err != nil {
+		log.Info("directly error", zap.Any("err", err))
+		code, ok := rpcerror.GRPCStatusCode(err)
+		if !ok {
+			log.Info("not a grpc error")
+		} else {
+			log.Info("it is a grpc error", zap.Any("code", code), zap.Error(err))
+		}
 		abortWorker(err)
 		return err
 	}
@@ -122,7 +129,7 @@ func (c *executorServiceClient) DispatchTask(
 
 	code, ok := rpcerror.GRPCStatusCode(err)
 	if !ok {
-		log.L().Warn("DispatchTask: received ignorable error", zap.Error(err))
+		log.Warn("DispatchTask: received ignorable error", zap.Error(err))
 		// Not an grpc error
 		return nil
 	}
@@ -130,12 +137,13 @@ func (c *executorServiceClient) DispatchTask(
 	// TODO: We will use concrete error types once we modify the server to use
 	// pkg/rpcerror.
 	if code == codes.NotFound || code == codes.Aborted {
+		log.Info("receive grpc error", zap.Any("code", code), zap.Any("err", err))
 		// Guaranteed to have failed.
 		abortWorker(err)
 		return err
 	}
 
-	log.L().Warn("DispatchTask: received ignorable error", zap.Error(err))
+	log.Warn("DispatchTask: received ignorable error", zap.Error(err))
 	// Error is ignorable.
 	return nil
 }

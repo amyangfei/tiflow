@@ -41,6 +41,7 @@ import (
 	pkgOrm "github.com/pingcap/tiflow/engine/pkg/orm"
 	"github.com/pingcap/tiflow/engine/pkg/p2p"
 	"github.com/pingcap/tiflow/engine/pkg/promutil"
+	"github.com/pingcap/tiflow/engine/pkg/rpcerror"
 	"github.com/pingcap/tiflow/engine/pkg/serverutil"
 	"github.com/pingcap/tiflow/engine/pkg/tenant"
 	"github.com/pingcap/tiflow/engine/test"
@@ -220,6 +221,13 @@ func (s *Server) makeTask(
 	return taskutil.WrapWorker(newWorker), nil
 }
 
+type CreateWorkerTerminateError struct {
+	rpcerror.Error[rpcerror.NotRetryable, rpcerror.Aborted]
+	Details string
+}
+
+var ErrCreateWorkerTerminate = rpcerror.Normalize[CreateWorkerTerminateError]()
+
 // PreDispatchTask implements Executor.PreDispatchTask
 func (s *Server) PreDispatchTask(ctx context.Context, req *pb.PreDispatchTaskRequest) (*pb.PreDispatchTaskResponse, error) {
 	if !s.isReadyToServe() {
@@ -240,7 +248,10 @@ func (s *Server) PreDispatchTask(ctx context.Context, req *pb.PreDispatchTaskReq
 		// "Use Aborted if the client should retry at a higher-level".
 		// Failure to make task is usually a problem that the business logic
 		// should be notified of.
-		return nil, status.Error(codes.Aborted, err.Error())
+		return nil, rpcerror.ToGRPCError(
+			ErrCreateWorkerTerminate.GenWithStack(&CreateWorkerTerminateError{
+				Details: err.Error(),
+			}))
 	}
 
 	if !s.taskCommitter.PreDispatchTask(req.GetRequestId(), task) {
