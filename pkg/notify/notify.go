@@ -66,7 +66,7 @@ func (r *Receiver) signalTickLoop() {
 		for {
 			select {
 			case <-r.closeCh:
-				break
+				break loop
 			case <-r.ticker.C:
 			}
 			exit := r.signalNonBlocking()
@@ -137,8 +137,10 @@ func (n *Notifier) Close() {
 	for _, receiver := range n.receivers {
 		if receiver.rec.ticker != nil {
 			receiver.rec.ticker.Stop()
+			close(receiver.rec.closeCh)
+		} else {
+			close(receiver.rec.c)
 		}
-		close(receiver.rec.closeCh)
 	}
 	n.receivers = nil
 	n.closed = true
