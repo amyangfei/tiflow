@@ -34,5 +34,8 @@ jobs:
       - name: Push Image
         uses: docker/build-push-action@v3
         with:
+          context: .
+          platforms: linux/amd64
+          file: deployments/engine/docker/Dockerfile
           push: true
           tags: amyangfei/tiflow:latest
