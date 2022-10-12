@@ -36,8 +36,14 @@ jobs:
 
       - name: Get Tag Name
         id: imageTag
-        if: ${{ github.event.inputs.tag != '' }}
-        run: echo "tag=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+        env:
+          INPUT_IMAGE_TAG: ${{ github.event.inputs.tag }}
+        run: |
+          if [[ -z "$INPUT_IMAGE_TAG" ]]; then
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${INPUT_IMAGE_TAG}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Build and push image
         uses: docker/build-push-action@v3
@@ -46,4 +52,4 @@ jobs:
           platforms: linux/amd64
           file: deployments/engine/docker/Dockerfile
           push: true
-          tags: amyangfei/tiflow:${{ steps.imageTag.outputs.tag || "latest" }}
+          tags: amyangfei/tiflow:${{ steps.imageTag.outputs.tag }}
