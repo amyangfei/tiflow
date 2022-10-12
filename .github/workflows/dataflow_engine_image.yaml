@@ -1,4 +1,4 @@
-name: dataflow engine image
+name: Dataflow Engine Image
 
 on:
   push:
