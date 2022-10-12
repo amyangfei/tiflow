@@ -46,4 +46,4 @@ jobs:
           platforms: linux/amd64
           file: deployments/engine/docker/Dockerfile
           push: true
-          tags: amyangfei/tiflow:${{ steps.imageTag.outputs.tag || latest }}
+          tags: amyangfei/tiflow:${{ steps.imageTag.outputs.tag || "latest" }}
