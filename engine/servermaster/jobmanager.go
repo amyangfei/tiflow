@@ -274,6 +274,9 @@ func (jm *JobManagerImpl) CreateJob(ctx context.Context, req *pb.CreateJobReques
 
 	// create job master metadata before creating it.
 	if err := jm.frameMetaClient.InsertJob(ctx, meta); err != nil {
+		if pkgOrm.IsDuplicateEntryError(err) {
+			return nil, ErrJobAlreadyExists.GenWithStack(&JobAlreadyExistsError{JobID: job.Id})
+		}
 		return nil, err
 	}
 

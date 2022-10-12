@@ -16,6 +16,7 @@ package servermaster
 import (
 	"context"
 	gerrors "errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -109,6 +110,7 @@ func TestJobManagerCreateJob(t *testing.T) {
 		},
 	}
 	_, err = mgr.CreateJob(ctx, req)
+	fmt.Printf("err: %s\n", err)
 	require.True(t, ErrJobAlreadyExists.Is(err))
 }
 
