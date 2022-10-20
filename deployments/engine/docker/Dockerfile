@@ -1,4 +1,4 @@
-FROM golang:1.19-alpine as builder
+FROM --platform=$BUILDPLATFORM golang:1.19-alpine as builder
 
 #build
 RUN apk add --no-cache \
@@ -13,7 +13,7 @@ RUN mkdir -p /dataflow-engine
 WORKDIR /dataflow-engine
 
 COPY . .
-RUN make engine
+RUN GOOS=$TARGETOS GOARCH=$TARGETARCH make engine
 
 FROM alpine:3.16
 
