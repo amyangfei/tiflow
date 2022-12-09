@@ -13,6 +13,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.0.2
 	github.com/chaos-mesh/go-sqlsmith v0.0.0-20220905074648-403033efad45
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
+	github.com/cloudwego/netpoll v0.3.1
 	github.com/cockroachdb/pebble v0.0.0-20220415182917-06c9d3be25b3
 	github.com/coreos/go-semver v0.3.0
 	github.com/davecgh/go-spew v1.1.1
@@ -127,6 +128,7 @@ require (
 	github.com/apache/thrift v0.13.1-0.20201008052519-daf620915714 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/blacktear23/go-proxyprotocol v1.0.2 // indirect
+	github.com/bytedance/gopkg v0.0.0-20220413063733-65bf48ffb3a7 // indirect
 	github.com/cakturk/go-netstat v0.0.0-20200220111822-e5b49efee7a5 // indirect
 	github.com/carlmjohnson/flagext v0.21.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect

@@ -15,9 +15,11 @@ package kv
 
 import (
 	"context"
+	"net"
 	"sync"
 	"time"
 
+	"github.com/cloudwego/netpoll"
 	"github.com/pingcap/log"
 	cerror "github.com/pingcap/tiflow/pkg/errors"
 	"github.com/pingcap/tiflow/pkg/security"
@@ -98,6 +100,9 @@ func createClientConn(ctx context.Context, credential *security.Credential, targ
 			Time:                10 * time.Second,
 			Timeout:             3 * time.Second,
 			PermitWithoutStream: true,
+		}),
+		grpc.WithDialer(func(addr string, timeout time.Duration) (net.Conn, error) {
+			return netpoll.DialConnection("tcp", addr, timeout)
 		}),
 	)
 	if err != nil {
