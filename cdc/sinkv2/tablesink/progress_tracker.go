@@ -40,7 +40,7 @@ const (
 // A pendingResolvedTs is received by progressTracker but hasn't been flushed yet.
 type pendingResolvedTs struct {
 	offset     uint64
-	resolvedTs model.ResolvedTs
+	resolvedTs *model.ResolvedTs
 }
 
 // progressTracker is used to track the progress of the table sink.
@@ -85,8 +85,9 @@ type progressTracker struct {
 	nextToResolvePos uint64
 
 	resolvedTsCache []pendingResolvedTs
+	resolvedTsPool  sync.Pool
 
-	lastMinResolvedTs model.ResolvedTs
+	lastMinResolvedTs *model.ResolvedTs
 }
 
 // newProgressTracker is used to create a new progress tracker.
@@ -103,7 +104,12 @@ func newProgressTracker(tableID model.TableID, bufferSize uint64) *progressTrack
 		// It means the start of the table.
 		// It's Ok to use 0 here.
 		// Because sink node only update the checkpoint when it's growing.
-		lastMinResolvedTs: model.NewResolvedTs(0),
+		lastMinResolvedTs: &model.ResolvedTs{},
+		resolvedTsPool: sync.Pool{
+			New: func() any {
+				return model.NewResolvedTs(0)
+			},
+		},
 	}
 }
 
@@ -141,7 +147,7 @@ func (r *progressTracker) addEvent() (postEventFlush func()) {
 }
 
 // addResolvedTs is used to add the pending resolved ts.
-func (r *progressTracker) addResolvedTs(resolvedTs model.ResolvedTs) {
+func (r *progressTracker) addResolvedTs(pResolvedTs *model.ResolvedTs) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -149,6 +155,13 @@ func (r *progressTracker) addResolvedTs(resolvedTs model.ResolvedTs) {
 	// So there is no need to try to append the resolved ts to `resolvedTsCache`.
 	if r.frozen || r.closed {
 		return
+	}
+
+	resolvedTs := r.resolvedTsPool.Get().(*model.ResolvedTs)
+	resolvedTs = &model.ResolvedTs{
+		Mode:    pResolvedTs.Mode,
+		Ts:      pResolvedTs.Ts,
+		BatchID: pResolvedTs.BatchID,
 	}
 
 	// If there is no event or all events are flushed, we can update the resolved ts directly.
@@ -249,7 +262,7 @@ func (r *progressTracker) advance() model.ResolvedTs {
 		}
 	}
 
-	return r.lastMinResolvedTs
+	return *r.lastMinResolvedTs
 }
 
 // trackingCount returns the number of pending events and resolved timestamps.

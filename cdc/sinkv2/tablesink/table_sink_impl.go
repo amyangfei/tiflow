@@ -92,7 +92,7 @@ func (e *EventTableSink[E]) UpdateResolvedTs(resolvedTs model.ResolvedTs) error 
 	})
 	// Despite the lack of data, we have to move forward with progress.
 	if i == 0 {
-		e.progressTracker.addResolvedTs(resolvedTs)
+		e.progressTracker.addResolvedTs(&resolvedTs)
 		return nil
 	}
 	resolvedEvents := e.eventBuffer[:i]
@@ -112,7 +112,7 @@ func (e *EventTableSink[E]) UpdateResolvedTs(resolvedTs model.ResolvedTs) error 
 		resolvedCallbackableEvents = append(resolvedCallbackableEvents, ce)
 	}
 	// Do not forget to add the resolvedTs to progressTracker.
-	e.progressTracker.addResolvedTs(resolvedTs)
+	e.progressTracker.addResolvedTs(&resolvedTs)
 	return e.backendSink.WriteEvents(resolvedCallbackableEvents...)
 }
 
