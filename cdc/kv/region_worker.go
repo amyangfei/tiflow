@@ -512,6 +512,11 @@ func (w *regionWorker) eventHandler(ctx context.Context) error {
 				}
 			}
 		}
+		for _, ev := range events {
+			if ev.resolvedTsEvent != nil {
+				w.session.resolvedTsPool.Put(ev)
+			}
+		}
 	}
 }
 

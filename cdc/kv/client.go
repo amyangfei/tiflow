@@ -408,6 +408,8 @@ type eventFeedSession struct {
 	changefeed model.ChangeFeedID
 	tableID    model.TableID
 	tableName  string
+
+	resolvedTsPool sync.Pool
 }
 
 type rangeRequestTask struct {
@@ -447,6 +449,13 @@ func newEventFeedSession(
 		rangeChSizeGauge:  clientChannelSize.WithLabelValues("range"),
 		streams:           make(map[string]*eventFeedStream),
 		streamsCanceller:  make(map[string]context.CancelFunc),
+		resolvedTsPool: sync.Pool{
+			New: func() any {
+				return &regionStatefulEvent{
+					resolvedTsEvent: &resolvedTsEvent{},
+				}
+			},
+		},
 
 		changefeed: changefeed,
 		tableID:    tableID,
@@ -1326,12 +1335,10 @@ func (s *eventFeedSession) sendResolvedTs(
 	for i := 0; i < worker.concurrency; i++ {
 		// Allocate a buffer with 1.5x length than average to reduce reallocate.
 		buffLen := len(resolvedTs.Regions) / worker.concurrency * 2
-		statefulEvents[i] = &regionStatefulEvent{
-			resolvedTsEvent: &resolvedTsEvent{
-				resolvedTs: resolvedTs.Ts,
-				regions:    make([]*regionFeedState, 0, buffLen),
-			},
-		}
+		ev := s.resolvedTsPool.Get().(*regionStatefulEvent)
+		ev.resolvedTsEvent.resolvedTs = resolvedTs.Ts
+		ev.resolvedTsEvent.regions = make([]*regionFeedState, 0, buffLen)
+		statefulEvents[i] = ev
 	}
 
 	for _, regionID := range resolvedTs.Regions {
