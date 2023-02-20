@@ -168,6 +168,11 @@ func generateDSNByConfig(
 		// set the `tidb_enable_external_ts_read` to `OFF`, so cdc could write to the sink
 		dsnCfg.Params["tidb_enable_external_ts_read"] = fmt.Sprintf(`"%s"`, tidbEnableExternalTSRead)
 	}
+
+	// TODO: passed by sink-uri
+	dsnCfg.Params["multiStatements"] = "true"
+	dsnCfg.Params["interpolateParams"] = "true"
+
 	dsnClone := dsnCfg.Clone()
 	dsnClone.Passwd = "******"
 	log.Info("sink uri is configured", zap.String("dsn", dsnClone.FormatDSN()))

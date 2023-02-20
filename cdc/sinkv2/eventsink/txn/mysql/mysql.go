@@ -361,15 +361,36 @@ func (s *mysqlBackend) batchSingleTxnDmls(
 
 	if len(deleteRows) > 0 {
 		for _, rows := range deleteRows {
-			sql, value := sqlmodel.GenDeleteSQL(rows...)
-			sqls = append(sqls, sql)
-			values = append(values, value)
+			for _, row := range rows {
+				sql, value := row.GenSQL(sqlmodel.DMLDelete)
+				sqls = append(sqls, sql)
+				values = append(values, value)
+			}
+			// TODO: add option
+			// sql, value := sqlmodel.GenDeleteSQL(rows...)
+			// sqls = append(sqls, sql)
+			// values = append(values, value)
 		}
 	}
 
 	// handle insert
 	if len(insertRows) > 0 {
 		for _, rows := range insertRows {
+			if translateToInsert {
+				for _, row := range rows {
+					sql, value := row.GenSQL(sqlmodel.DMLInsert)
+					sqls = append(sqls, sql)
+					values = append(values, value)
+				}
+			} else {
+				for _, row := range rows {
+					sql, value := row.GenSQL(sqlmodel.DMLReplace)
+					sqls = append(sqls, sql)
+					values = append(values, value)
+				}
+			}
+
+			/* TODO: add option
 			if translateToInsert {
 				sql, value := sqlmodel.GenInsertSQL(sqlmodel.DMLInsert, rows...)
 				sqls = append(sqls, sql)
@@ -379,15 +400,22 @@ func (s *mysqlBackend) batchSingleTxnDmls(
 				sqls = append(sqls, sql)
 				values = append(values, value)
 			}
+			*/
 		}
 	}
 
 	// handle update
 	if len(updateRows) > 0 {
 		for _, rows := range updateRows {
-			s, v := s.genUpdateSQL(rows...)
-			sqls = append(sqls, s...)
-			values = append(values, v...)
+			for _, row := range rows {
+				sql, value := row.GenSQL(sqlmodel.DMLUpdate)
+				sqls = append(sqls, sql)
+				values = append(values, value)
+			}
+			// TODO: add option
+			// s, v := s.genUpdateSQL(rows...)
+			// sqls = append(sqls, s...)
+			// values = append(values, v...)
 		}
 	}
 
@@ -598,25 +626,45 @@ func (s *mysqlBackend) execDMLWithMaxRetries(pctx context.Context, dmls *prepare
 					start, s.changefeed, "BEGIN", dmls.rowCount, dmls.startTs)
 			}
 
+			multiStmtSQL := ""
+			multiStmtArgs := []interface{}{}
 			for i, query := range dmls.sqls {
-				args := dmls.values[i]
-				log.Debug("exec row", zap.Int("workerID", s.workerID),
-					zap.String("sql", query), zap.Any("args", args))
-				ctx, cancelFunc := context.WithTimeout(pctx, writeTimeout)
-				if _, err := tx.ExecContext(ctx, query, args...); err != nil {
-					err := logDMLTxnErr(
-						cerror.WrapError(cerror.ErrMySQLTxnError, err),
-						start, s.changefeed, query, dmls.rowCount, dmls.startTs)
-					if rbErr := tx.Rollback(); rbErr != nil {
-						if errors.Cause(rbErr) != context.Canceled {
-							log.Warn("failed to rollback txn", zap.Error(rbErr))
+				multiStmtSQL += query + ";"
+				multiStmtArgs = append(multiStmtArgs, dmls.values[i]...)
+				/*
+					args := dmls.values[i]
+					log.Debug("exec row", zap.Int("workerID", s.workerID),
+						zap.String("sql", query), zap.Any("args", args))
+					ctx, cancelFunc := context.WithTimeout(pctx, writeTimeout)
+					if _, err := tx.ExecContext(ctx, query, args...); err != nil {
+						err := logDMLTxnErr(
+							cerror.WrapError(cerror.ErrMySQLTxnError, err),
+							start, s.changefeed, query, dmls.rowCount, dmls.startTs)
+						if rbErr := tx.Rollback(); rbErr != nil {
+							if errors.Cause(rbErr) != context.Canceled {
+								log.Warn("failed to rollback txn", zap.Error(rbErr))
+							}
 						}
+						cancelFunc()
+						return 0, err
 					}
 					cancelFunc()
-					return 0, err
+				*/
+			}
+			ctx, cancelFunc := context.WithTimeout(pctx, writeTimeout)
+			if _, err := tx.ExecContext(ctx, multiStmtSQL, multiStmtArgs...); err != nil {
+				err := logDMLTxnErr(
+					cerror.WrapError(cerror.ErrMySQLTxnError, err),
+					start, s.changefeed, multiStmtSQL, dmls.rowCount, dmls.startTs)
+				if rbErr := tx.Rollback(); rbErr != nil {
+					if errors.Cause(rbErr) != context.Canceled {
+						log.Warn("failed to rollback txn", zap.Error(rbErr))
+					}
 				}
 				cancelFunc()
+				return 0, err
 			}
+			cancelFunc()
 
 			// we set write source for each txn,
 			// so we can use it to trace the data source
