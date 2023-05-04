@@ -87,24 +87,19 @@ func EncodeKey(uniqueID uint32, tableID uint64, event *model.PolymorphicEvent) [
 		log.Panic("rawkv must not be nil", zap.Any("event", event))
 	}
 	// uniqueID, tableID, CRTs, startTs, Put/Delete, Key
-	length := 4 + 8 + 8 + 8 + 2 + len(event.RawKV.Key)
-	buf := make([]byte, 0, length)
-	uint64Buf := [8]byte{}
+	fixedLen := 4 + 8 + 8 + 8 + 2
+	length := fixedLen + len(event.RawKV.Key)
+	buf := make([]byte, fixedLen, length)
 	// uniqueID
-	binary.BigEndian.PutUint32(uint64Buf[:], uniqueID)
-	buf = append(buf, uint64Buf[:4]...)
+	binary.BigEndian.PutUint32(buf[:4], uniqueID)
 	// table ID
-	binary.BigEndian.PutUint64(uint64Buf[:], tableID)
-	buf = append(buf, uint64Buf[:]...)
+	binary.BigEndian.PutUint64(buf[4:12], tableID)
 	// CRTs
-	binary.BigEndian.PutUint64(uint64Buf[:], event.CRTs)
-	buf = append(buf, uint64Buf[:]...)
+	binary.BigEndian.PutUint64(buf[12:20], event.CRTs)
 	// startTs
-	binary.BigEndian.PutUint64(uint64Buf[:], event.StartTs)
-	buf = append(buf, uint64Buf[:]...)
+	binary.BigEndian.PutUint64(buf[20:28], event.StartTs)
 	// Let Delete < Update < Insert
-	binary.BigEndian.PutUint16(uint64Buf[:], getDMLOrder(event.RawKV))
-	buf = append(buf, uint64Buf[:2]...)
+	binary.BigEndian.PutUint16(buf[28:30], getDMLOrder(event.RawKV))
 	// key
 	return append(buf, event.RawKV.Key...)
 }
